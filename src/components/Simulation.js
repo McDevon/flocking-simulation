@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import startRender from '../simulations/RenderLoop'
-import testSim from '../simulations/TestSim'
+import flockSim from '../simulations/FlockSim';
 
 const Simulation = () => {
     const [counter, setCounter] = useState(10)
@@ -23,7 +23,7 @@ const Simulation = () => {
     const startHook = () => {
         console.log('start hook')
         canvasElement.current['counter'] = 10
-        startRender(canvasElement.current, testSim())
+        startRender(canvasElement.current, flockSim())
     }
 
     useEffect(startHook, [])
