@@ -46,7 +46,7 @@ class FlockSimulation {
         this.height = canvas.height
 
         this.birds = []
-        for (let i = 0; i < 2000; i++) {
+        for (let i = 0; i < 2500; i++) {
             const bird = new Bird()
             bird.init(canvas)
             this.birds.push(bird)
