@@ -19,16 +19,7 @@ class Bird {
         this.velocity = new Vec2D.Vector(-5 + Math.random() * 10, -5 + Math.random() * 10)
         this.cw = canvas.width
         this.ch = canvas.height
-    }
-
-    update(dt, cx) {
-        this.draw(cx)
-        if (this.position.x >= this.cw && this.velocity.x > 0) { this.velocity.x *= -1 }
-        if (this.position.y >= this.ch && this.velocity.y > 0) { this.velocity.y *= -1 }
-        if (this.position.x <= 0 && this.velocity.x < 0) { this.velocity.x *= -1 }
-        if (this.position.y <= 0 && this.velocity.y < 0) { this.velocity.y *= -1 }
-
-        this.position.add(this.velocity.clone().multiplyByScalar(this.canvas.counter * 2 * dt))
+        this.space = ''
     }
 
     draw(cx) {
@@ -38,12 +29,12 @@ class Bird {
         p2.rotate(angle).add(this.position)
         p3.rotate(angle).add(this.position)
 
-        cx.beginPath();
-        cx.fillStyle = 'red';
-        cx.moveTo(p1.x, p1.y);
-        cx.lineTo(p2.x, p2.y);
-        cx.lineTo(p3.x, p3.y);
-        cx.fill();
+        cx.beginPath()
+        cx.fillStyle = '#0000FF'
+        cx.moveTo(p1.x, p1.y)
+        cx.lineTo(p2.x, p2.y)
+        cx.lineTo(p3.x, p3.y)
+        cx.fill()
     }
 }
 
@@ -55,11 +46,13 @@ class FlockSimulation {
         this.height = canvas.height
 
         this.birds = []
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 2000; i++) {
             const bird = new Bird()
             bird.init(canvas)
             this.birds.push(bird)
         }
+
+        this.spaces = {}
 
         this.approachDistance = 30
         this.repulseDisntance = 15
@@ -76,7 +69,7 @@ class FlockSimulation {
         this.centerX = canvas.width * 0.5
         this.centerY = canvas.height * 0.5
 
-        this.centerAttractMinDist = 100
+        this.centerAttractMinDist = 200
         this.centerAttractMaxDist = 300
         this.centerAttractMinDistSq = this.centerAttractMinDist * this.centerAttractMinDist
         this.centerAttractMaxDistSq = this.centerAttractMaxDist * this.centerAttractMaxDist
@@ -86,12 +79,35 @@ class FlockSimulation {
     flockBehaviour(bird, dt) {
         bird.velocity.unit().multiplyByScalar(this.flightSpeed)
 
-        for (let other of this.birds) {
+        const spaceX = Math.floor(bird.position.x / this.spaceSize)
+        const spaceY = Math.floor(bird.position.y / this.spaceSize)
+        const spaceName = `${spaceX},${spaceY}`
+
+        if (bird.space !== spaceName) {
+            if (this.spaces.hasOwnProperty(bird.space)) {
+                const space = this.spaces[bird.space]
+                for( var i = 0; i < space.length; i++) { 
+                    if ( space[i] === bird) {
+                        space.splice(i, 1);
+                        break
+                    }
+                }
+            }
+            bird.space = spaceName
+            if (!this.spaces.hasOwnProperty(spaceName)) {
+                this.spaces[spaceName] = []
+            }
+            if (!this.spaces[spaceName].includes(bird)) {
+                this.spaces[spaceName].push(bird)
+            }
+        }
+
+        const handleOther = (other) => {
             let offset = other.position.clone().subtract(bird.position)
             let distanceSq = offset.x * offset.x + offset.y * offset.y
             if (bird === other
                 || distanceSq > this.approachSq) {
-                    continue
+                    return
                 }
             if (distanceSq < this.repulseSq) {
                 offset.reverse().unit().multiplyByScalar(this.repulseValue)
@@ -100,6 +116,18 @@ class FlockSimulation {
             }
             bird.velocity.add(offset)
         }
+
+        for (let x = spaceX - 1; x <= spaceX + 1; x++) {
+            for (let y = spaceY - 1; y <= spaceY + 1; y++) {
+                const name = `${x},${y}`
+                if (this.spaces.hasOwnProperty(name)) {
+                    this.spaces[name].forEach(handleOther)
+                }
+            }
+        }
+        /*for (let other of this.birds) {
+            handleOther(other)
+        }*/
 
         const centerOffsetX = this.centerX - bird.position.x
         const centerOffsetY = this.centerY - bird.position.y
@@ -115,9 +143,6 @@ class FlockSimulation {
     update(dt, cx) {
         this.birds.forEach(bird => {
             this.flockBehaviour(bird, dt)
-
-
-
             bird.draw(cx)
         })
     }
