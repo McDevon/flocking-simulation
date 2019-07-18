@@ -27,7 +27,7 @@ const startRender = (canvas, items = []) => {
         window.requestAnimationFrame(simulationLoop);
 
         currentTime = (new Date()).getTime();
-        dt = Math.min((currentTime - lastTime) / 1000, 0.2);
+        dt = Math.min((currentTime - lastTime) / 1000, 0.03);
 
         cx.clearRect(0, 0, cw, ch);
 
