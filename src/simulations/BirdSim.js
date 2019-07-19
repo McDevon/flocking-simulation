@@ -30,7 +30,11 @@ class Bird {
         p3.rotate(angle).add(this.position)
 
         cx.beginPath()
-        cx.fillStyle = '#0000FF'
+        if (this.index === 0) {
+            cx.fillStyle = '#FF0000'
+        } else {
+            cx.fillStyle = '#0000FF'
+        }
         cx.moveTo(p1.x, p1.y)
         cx.lineTo(p2.x, p2.y)
         cx.lineTo(p3.x, p3.y)
@@ -38,7 +42,7 @@ class Bird {
     }
 }
 
-class FlockSimulation {
+class BirdSimulation {
 
     init(canvas) {
         this.canvas = canvas
@@ -52,18 +56,15 @@ class FlockSimulation {
             this.birds.push(bird)
         }
 
-        this.birdCount = 100
-
+        this.spaces = {}
+        
+        this.setBirdCount(100)
         this.setApproachDistance(30)
         this.setRepulseDistance(15)
 
-        this.spaces = {}
-
-        this.spaceSize = this.approachDistance
-
-        this.flightSpeed = 50
-        this.approachValue = 0.5
-        this.repulseValue = 3
+        this.setFlightSpeed(50)
+        this.setApproachValue(0.5)
+        this.setRepulseValue(3)
         
         this.centerX = canvas.width * 0.5
         this.centerY = canvas.height * 0.5
@@ -75,13 +76,22 @@ class FlockSimulation {
         this.centerAttarctValue = 1
     }
 
+    clearSpaces() {
+        for (let spaceName in this.spaces) {
+            if (this.spaces.hasOwnProperty(spaceName)) {
+                this.spaces[spaceName].length = 0
+            }
+        }
+        console.log('clear spaces, size', this.spaceSize)
+    }
+
     setBirdCount(count) {
         this.birdCount = count
         if (this.birdCount === this.previousBirdCount) {
             return
         }
         if (this.birdCount < this.previousBirdCount) {
-            this.spaces = {}
+            this.clearSpaces()
         }
         this.previousBirdCount = this.birdCount
     }
@@ -89,11 +99,33 @@ class FlockSimulation {
     setApproachDistance(distance) {
         this.approachDistance = distance
         this.approachSq = this.approachDistance * this.approachDistance
+        let biggerDistance = Math.max(this.approachDistance, this.repulseDistance)
+        if (this.spaceSize !== biggerDistance) {
+            this.spaceSize = biggerDistance
+            this.clearSpaces()
+        }
     }
 
     setRepulseDistance(distance) {
-        this.repulseDisntance = distance
-        this.repulseSq = this.repulseDisntance * this.repulseDisntance
+        this.repulseDistance = distance
+        this.repulseSq = this.repulseDistance * this.repulseDistance
+        let biggerDistance = Math.max(this.approachDistance, this.repulseDistance)
+        if (this.spaceSize !== biggerDistance) {
+            this.spaceSize = biggerDistance
+            this.clearSpaces()
+        }
+    }
+
+    setFlightSpeed(value) {
+        this.flightSpeed = value
+    }
+
+    setApproachValue(value) {
+        this.approachValue = value
+    }
+
+    setRepulseValue(value) {
+        this.repulseValue = value
     }
 
     flockBehaviour(bird, dt) {
@@ -125,11 +157,15 @@ class FlockSimulation {
         const handleOther = (other) => {
             let offset = other.position.clone().subtract(bird.position)
             let distanceSq = offset.x * offset.x + offset.y * offset.y
+            let biggerDistanceSq = Math.max(this.approachSq, this.repulseSq)
             if (bird === other
-                || distanceSq > this.approachSq) {
+                || distanceSq > biggerDistanceSq) {
                     return
                 }
             if (distanceSq < this.repulseSq) {
+                if (bird.index === 0) {
+                    console.log('repulse sq', this.repulseSq)
+                }
                 offset.reverse().unit().multiplyByScalar(this.repulseValue)
             } else {
                 offset = other.velocity.clone().unit().multiplyByScalar(this.approachValue)
@@ -164,15 +200,15 @@ class FlockSimulation {
     update(dt, cx) {
         for (let x = 0; x < this.birdCount; x++) {
             const bird = this.birds[x]
+            bird.index = x
             this.flockBehaviour(bird, dt)
             bird.draw(cx)
         }
     }
 }
 
-const flockSim = () => {
-    return new FlockSimulation()
-    //return [...Array(10)].map(() => new Bird())
+const birdSim = () => {
+    return new BirdSimulation()
 }
 
-export default flockSim
+export default birdSim
