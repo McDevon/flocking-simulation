@@ -7,7 +7,7 @@ const vendorCheck = () => {
     }
 }
 
-const startRender = (canvas, items = []) => {
+const startRender = (canvas, item) => {
     if (typeof (canvas.getContext) === undefined) {
         return
     }
@@ -21,17 +21,18 @@ const startRender = (canvas, items = []) => {
         currentTime = 0,
         dt = 0
     
-    items.forEach(it => it.init(canvas))
+    canvas.simulation = item
+    item.init(canvas)
 
     const simulationLoop = () => {
-        window.requestAnimationFrame(simulationLoop);
+        window.requestAnimationFrame(simulationLoop)
 
-        currentTime = (new Date()).getTime();
-        dt = Math.min((currentTime - lastTime) / 1000, 0.03);
+        currentTime = (new Date()).getTime()
+        dt = Math.min((currentTime - lastTime) / 1000, 0.03)
 
-        cx.clearRect(0, 0, cw, ch);
+        cx.clearRect(0, 0, cw, ch)
 
-        items.forEach(it => it.update(dt, cx))
+        item.update(dt, cx)
 
         lastTime = currentTime
     }

@@ -52,20 +52,19 @@ class FlockSimulation {
             this.birds.push(bird)
         }
 
-        this.spaces = {}
+        this.birdCount = 100
 
-        this.approachDistance = 30
-        this.repulseDisntance = 15
+        this.setApproachDistance(30)
+        this.setRepulseDistance(15)
+
+        this.spaces = {}
 
         this.spaceSize = this.approachDistance
 
         this.flightSpeed = 50
         this.approachValue = 0.5
         this.repulseValue = 3
-
-        this.approachSq = this.approachDistance * this.approachDistance
-        this.repulseSq = this.repulseDisntance * this.repulseDisntance
-
+        
         this.centerX = canvas.width * 0.5
         this.centerY = canvas.height * 0.5
 
@@ -74,6 +73,27 @@ class FlockSimulation {
         this.centerAttractMinDistSq = this.centerAttractMinDist * this.centerAttractMinDist
         this.centerAttractMaxDistSq = this.centerAttractMaxDist * this.centerAttractMaxDist
         this.centerAttarctValue = 1
+    }
+
+    setBirdCount(count) {
+        this.birdCount = count
+        if (this.birdCount === this.previousBirdCount) {
+            return
+        }
+        if (this.birdCount < this.previousBirdCount) {
+            this.spaces = {}
+        }
+        this.previousBirdCount = this.birdCount
+    }
+
+    setApproachDistance(distance) {
+        this.approachDistance = distance
+        this.approachSq = this.approachDistance * this.approachDistance
+    }
+
+    setRepulseDistance(distance) {
+        this.repulseDisntance = distance
+        this.repulseSq = this.repulseDisntance * this.repulseDisntance
     }
 
     flockBehaviour(bird, dt) {
@@ -125,7 +145,8 @@ class FlockSimulation {
                 }
             }
         }
-        /*for (let other of this.birds) {
+        /*for (let i = 0; i < this.birdCount; i++) {
+            const other = this.birds[i]
             handleOther(other)
         }*/
 
@@ -141,15 +162,16 @@ class FlockSimulation {
     }
 
     update(dt, cx) {
-        this.birds.forEach(bird => {
+        for (let x = 0; x < this.birdCount; x++) {
+            const bird = this.birds[x]
             this.flockBehaviour(bird, dt)
             bird.draw(cx)
-        })
+        }
     }
 }
 
 const flockSim = () => {
-    return [new FlockSimulation()]
+    return new FlockSimulation()
     //return [...Array(10)].map(() => new Bird())
 }
 

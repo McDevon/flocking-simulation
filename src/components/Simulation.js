@@ -1,29 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react'
 import startRender from '../simulations/RenderLoop'
-import flockSim from '../simulations/FlockSim';
+import flockSim from '../simulations/FlockSim'
+import Slider from 'react-input-slider'
 
-const Simulation = () => {
-    const [counter, setCounter] = useState(10)
+
+const Simulation = () => {    
+    const [birds, setBirds] = useState({ x: 10 })
     const canvasElement = useRef(null)
     const canvasStyle = {
         border: ' 1px solid #aaa',
     }
 
-    const decrease = () => () => {
-        const newValue = Math.max(counter - 1, 0)
-        setCounter(newValue)
-        canvasElement.current['counter'] = newValue
-    }
-    const increase = () => () => {
-        const newValue = Math.min(counter + 1, 20)
-        setCounter(newValue)
-        canvasElement.current['counter'] = newValue
-    }
-
     const startHook = () => {
         console.log('start hook')
-        canvasElement.current['counter'] = 10
         startRender(canvasElement.current, flockSim())
+        canvasElement.current.simulation.setBirdCount(birds.x)
+    }
+
+    const changeBirds = () => ({x}) => {
+        setBirds({ x: x })
+        canvasElement.current.simulation.setBirdCount(x)
     }
 
     useEffect(startHook, [])
@@ -31,13 +27,17 @@ const Simulation = () => {
     return <div>
         <canvas style={canvasStyle} ref={canvasElement} width="400" height="300" />
         <div>
-            {counter}
-            <button onClick={increase()}>
-                +
-            </button>
-            <button onClick={decrease()}>
-                -
-            </button>
+            <div>
+                {`Birds: ${birds.x}`}
+            </div>
+            <Slider
+                axis="x"
+                xstep={10}
+                xmin={10}
+                xmax={2500}
+                x={birds.x}
+                onChange={changeBirds()}
+            />
         </div>
     </div>
 }
