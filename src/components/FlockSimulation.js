@@ -15,12 +15,17 @@ const FlockSimulation = () => {
     const [linearRepulse, setLinearRepulse] = useState(1)
     const [redBird, setRedBird] = useState(1)
     const canvasElement = useRef(null)
+
     const canvasStyle = {
         border: ' 1px solid #aaa',
     }
-    const sliderDivStyle = {
+    const controlAreaStyle = {
         paddingLeft: '10px',
         paddingRight: '10px'
+    }
+    const columnStyle = {
+        display: 'inline-block',
+        verticalAlign: 'top'
     }
 
     const startHook = () => {
@@ -86,7 +91,8 @@ const FlockSimulation = () => {
 
     return <div>
         <canvas style={canvasStyle} ref={canvasElement} width="800" height="450" />
-        <div style={sliderDivStyle}>
+        <div style={controlAreaStyle}>
+            <div style={columnStyle}>
             <SimSlider
                 label='Birds' value={birds.x}
                 min={10} max={2500} step={10}
@@ -102,6 +108,8 @@ const FlockSimulation = () => {
                 min={0} max={200} step={1}
                 onChange={changeApproachDistance}
                 />
+            </div>
+            <div style={columnStyle}>
             <SimSlider
                 label='Approach value' value={approachValue.x.toFixed(1)}
                 min={0} max={10} step={0.1}
@@ -117,6 +125,8 @@ const FlockSimulation = () => {
                 min={0} max={10} step={0.1}
                 onChange={changeRepulseValue}
                 />
+            </div>
+            <div style={columnStyle}>
             <SimSwitch 
                 label='Linear approach' value={linearApproach}
                 onChange={changeLinearApproach}
@@ -129,6 +139,7 @@ const FlockSimulation = () => {
                 label='Red bird' value={redBird}
                 onChange={changeRedBird}
                 />
+            </div>
         </div>
     </div>
 }
