@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import startRender from '../simulations/RenderLoop'
 import birdSim from '../simulations/BirdSim'
-import Slider from 'react-input-slider'
-
+import SimSlider from './SimSlider';
 
 const FlockSimulation = () => {    
     const [birds, setBirds] = useState({ x: 10 })
@@ -66,72 +65,36 @@ const FlockSimulation = () => {
     return <div>
         <canvas style={canvasStyle} ref={canvasElement} width="800" height="450" />
         <div style={sliderDivStyle}>
-            <div>
-                {`Birds: ${birds.x}`}
-            </div>
-            <Slider
-                axis="x"
-                xstep={10}
-                xmin={10}
-                xmax={2500}
-                x={birds.x}
-                onChange={changeBirds()}
-            />
-            <div>
-                {`Bird speed: ${flightSpeed.x}`}
-            </div>
-            <Slider
-                axis="x"
-                xstep={1}
-                xmin={0}
-                xmax={200}
-                x={flightSpeed.x}
-                onChange={changeFlightSpeed()}
-            />
-            <div>
-                {`Approach distance: ${approachDistance.x}`}
-            </div>
-            <Slider
-                axis="x"
-                xstep={1}
-                xmin={0}
-                xmax={200}
-                x={approachDistance.x}
-                onChange={changeApproachDistance()}
-            />
-            <div>
-                {`Approach value: ${approachValue.x.toFixed(1)}`}
-            </div>
-            <Slider
-                axis="x"
-                xstep={0.1}
-                xmin={0}
-                xmax={10}
-                x={approachValue.x}
-                onChange={changeApproachValue()}
-            />
-            <div>
-                {`Repulse distance: ${repulseDistance.x}`}
-            </div>
-            <Slider
-                axis="x"
-                xstep={1}
-                xmin={0}
-                xmax={200}
-                x={repulseDistance.x}
-                onChange={changeRepulseDistance()}
-            />
-            <div>
-                {`Repulse value: ${repulseValue.x.toFixed(1)}`}
-            </div>
-            <Slider
-                axis="x"
-                xstep={0.1}
-                xmin={0}
-                xmax={10}
-                x={repulseValue.x}
-                onChange={changeRepulseValue()}
-            />
+            <SimSlider
+                label='Birds' value={birds.x}
+                min={10} max={2500} step={10}
+                onChange={changeBirds}
+                />
+            <SimSlider
+                label='Bird speed' value={flightSpeed.x}
+                min={0} max={200} step={1}
+                onChange={changeFlightSpeed}
+                />
+            <SimSlider
+                label='Approach distance' value={approachDistance.x}
+                min={0} max={200} step={1}
+                onChange={changeApproachDistance}
+                />
+            <SimSlider
+                label='Approach value' value={approachValue.x.toFixed(1)}
+                min={0} max={10} step={0.1}
+                onChange={changeApproachValue}
+                />
+            <SimSlider
+                label='Repulse distance' value={repulseDistance.x}
+                min={0} max={200} step={1}
+                onChange={changeRepulseDistance}
+                />
+            <SimSlider
+                label='Repulse value' value={repulseValue.x.toFixed(1)}
+                min={0} max={10} step={0.1}
+                onChange={changeRepulseValue}
+                />
         </div>
     </div>
 }
