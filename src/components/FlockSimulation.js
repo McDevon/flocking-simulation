@@ -13,6 +13,7 @@ const FlockSimulation = () => {
     const [repulseValue, setRepulseValue] = useState({ x: 3 })
     const [linearApproach, setLinearApproach] = useState(0)
     const [linearRepulse, setLinearRepulse] = useState(1)
+    const [redBird, setRedBird] = useState(1)
     const canvasElement = useRef(null)
     const canvasStyle = {
         border: ' 1px solid #aaa',
@@ -33,6 +34,7 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setRepulseValue(repulseValue.x)
         canvasElement.current.simulation.setLinearApproach(linearApproach)
         canvasElement.current.simulation.setLinearRepulse(linearRepulse)
+        canvasElement.current.simulation.setRedBird(redBird)
     }
 
     const changeBirds = () => ({x}) => {
@@ -73,6 +75,11 @@ const FlockSimulation = () => {
     const changeLinearRepulse = () => (x) => {
         setLinearRepulse(x)
         canvasElement.current.simulation.setLinearRepulse(x)
+    }
+
+    const changeRedBird = () => (x) => {
+        setRedBird(x)
+        canvasElement.current.simulation.setRedBird(x)
     }
 
     useEffect(startHook, [])
@@ -117,6 +124,10 @@ const FlockSimulation = () => {
             <SimSwitch 
                 label='Linear repulse' value={linearRepulse}
                 onChange={changeLinearRepulse}
+                />
+            <SimSwitch 
+                label='Red bird' value={redBird}
+                onChange={changeRedBird}
                 />
         </div>
     </div>

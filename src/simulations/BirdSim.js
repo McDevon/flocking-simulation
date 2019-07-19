@@ -20,6 +20,7 @@ class Bird {
         this.cw = canvas.width
         this.ch = canvas.height
         this.space = ''
+        this.color = '#0000FF'
     }
 
     draw(cx) {
@@ -30,7 +31,7 @@ class Bird {
         p3.rotate(angle).add(this.position)
 
         cx.beginPath()
-        cx.fillStyle = this.index === 0 ? '#FF0000' : '#0000FF'
+        cx.fillStyle = this.color
         cx.moveTo(p1.x, p1.y)
         cx.lineTo(p2.x, p2.y)
         cx.lineTo(p3.x, p3.y)
@@ -64,6 +65,7 @@ class BirdSimulation {
 
         this.setLinearRepulse(true)
         this.setLinearApproach(true)
+        this.setRedBird(true)
         
         this.centerX = canvas.width * 0.5
         this.centerY = canvas.height * 0.5
@@ -126,12 +128,17 @@ class BirdSimulation {
         this.repulseValue = value
     }
 
+    setLinearApproach(value) {
+        this.linearApproach = value
+    }
+    
     setLinearRepulse(value) {
         this.linearRepulse = value
     }
 
-    setLinearApproach(value) {
-        this.linearApproach = value
+    setRedBird(value) {
+        this.redBird = value
+        this.birds[0].color = this.redBird ? '#FF0000' : '#0000FF'
     }
 
     flockBehaviour(bird, dt) {
