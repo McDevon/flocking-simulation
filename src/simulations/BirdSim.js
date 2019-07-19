@@ -30,11 +30,7 @@ class Bird {
         p3.rotate(angle).add(this.position)
 
         cx.beginPath()
-        if (this.index === 0) {
-            cx.fillStyle = '#FF0000'
-        } else {
-            cx.fillStyle = '#0000FF'
-        }
+        cx.fillStyle = this.index === 0 ? '#FF0000' : '#0000FF'
         cx.moveTo(p1.x, p1.y)
         cx.lineTo(p2.x, p2.y)
         cx.lineTo(p3.x, p3.y)
@@ -65,6 +61,9 @@ class BirdSimulation {
         this.setFlightSpeed(50)
         this.setApproachValue(0.5)
         this.setRepulseValue(3)
+
+        this.setLinearRepulse(true)
+        this.setLinearApproach(true)
         
         this.centerX = canvas.width * 0.5
         this.centerY = canvas.height * 0.5
@@ -82,7 +81,6 @@ class BirdSimulation {
                 this.spaces[spaceName].length = 0
             }
         }
-        console.log('clear spaces, size', this.spaceSize)
     }
 
     setBirdCount(count) {
@@ -128,6 +126,14 @@ class BirdSimulation {
         this.repulseValue = value
     }
 
+    setLinearRepulse(value) {
+        this.linearRepulse = value
+    }
+
+    setLinearApproach(value) {
+        this.linearApproach = value
+    }
+
     flockBehaviour(bird, dt) {
         bird.velocity.unit().multiplyByScalar(this.flightSpeed)
 
@@ -154,6 +160,8 @@ class BirdSimulation {
             }
         }
 
+        const approacLength = this.approachDistance - this.repulseDistance
+
         const handleOther = (other) => {
             let offset = other.position.clone().subtract(bird.position)
             let distanceSq = offset.x * offset.x + offset.y * offset.y
@@ -163,12 +171,19 @@ class BirdSimulation {
                     return
                 }
             if (distanceSq < this.repulseSq) {
-                if (bird.index === 0) {
-                    console.log('repulse sq', this.repulseSq)
+                if (this.linearRepulse) {
+                    const multiplier = (this.repulseDistance - Math.sqrt(distanceSq)) / this.repulseDistance
+                    offset.reverse().unit().multiplyByScalar(this.repulseValue * multiplier)
+                } else {
+                    offset.reverse().unit().multiplyByScalar(this.repulseValue)
                 }
-                offset.reverse().unit().multiplyByScalar(this.repulseValue)
             } else {
-                offset = other.velocity.clone().unit().multiplyByScalar(this.approachValue)
+                if (this.linearApproach) {
+                    const multiplier = (approacLength - (Math.sqrt(distanceSq) - this.repulseDistance)) / (this.approachDistance - this.repulseDistance)
+                    offset = other.velocity.clone().unit().multiplyByScalar(this.approachValue * multiplier)
+                } else {
+                    offset = other.velocity.clone().unit().multiplyByScalar(this.approachValue)
+                }
             }
             bird.velocity.add(offset)
         }

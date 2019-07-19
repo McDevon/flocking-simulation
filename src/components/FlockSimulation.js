@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import startRender from '../simulations/RenderLoop'
 import birdSim from '../simulations/BirdSim'
 import SimSlider from './SimSlider';
+import SimSwitch from './SimSwitch';
 
 const FlockSimulation = () => {    
     const [birds, setBirds] = useState({ x: 10 })
@@ -10,6 +11,8 @@ const FlockSimulation = () => {
     const [repulseDistance, setRepulseDistance] = useState({ x: 15 })
     const [approachValue, setApproachValue] = useState({ x: 0.5 })
     const [repulseValue, setRepulseValue] = useState({ x: 3 })
+    const [linearApproach, setLinearApproach] = useState(0)
+    const [linearRepulse, setLinearRepulse] = useState(1)
     const canvasElement = useRef(null)
     const canvasStyle = {
         border: ' 1px solid #aaa',
@@ -28,6 +31,8 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setRepulseDistance(repulseDistance.x)
         canvasElement.current.simulation.setApproachValue(approachValue.x)
         canvasElement.current.simulation.setRepulseValue(repulseValue.x)
+        canvasElement.current.simulation.setLinearApproach(linearApproach)
+        canvasElement.current.simulation.setLinearRepulse(linearRepulse)
     }
 
     const changeBirds = () => ({x}) => {
@@ -58,6 +63,16 @@ const FlockSimulation = () => {
     const changeRepulseDistance = () => ({x}) => {
         setRepulseDistance({ x: x })
         canvasElement.current.simulation.setRepulseDistance(x)
+    }
+
+    const changeLinearApproach = () => (x) => {
+        setLinearApproach(x)
+        canvasElement.current.simulation.setLinearApproach(x)
+    }
+
+    const changeLinearRepulse = () => (x) => {
+        setLinearRepulse(x)
+        canvasElement.current.simulation.setLinearRepulse(x)
     }
 
     useEffect(startHook, [])
@@ -94,6 +109,14 @@ const FlockSimulation = () => {
                 label='Repulse value' value={repulseValue.x.toFixed(1)}
                 min={0} max={10} step={0.1}
                 onChange={changeRepulseValue}
+                />
+            <SimSwitch 
+                label='Linear approach' value={linearApproach}
+                onChange={changeLinearApproach}
+                />
+            <SimSwitch 
+                label='Linear repulse' value={linearRepulse}
+                onChange={changeLinearRepulse}
                 />
         </div>
     </div>
