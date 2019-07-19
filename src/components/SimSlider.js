@@ -3,9 +3,10 @@ import Slider from 'react-input-slider'
 
 const SimSlider = ({ label, value, step, min, max, onChange }) => {
     const divStyle = {
-        marginTop: 10,
-        marginLeft: 5,
-        marginRight: 5
+        marginTop: '5px',
+        marginLeft: '5px',
+        marginRight: '5px',
+        marginBottom: '5px'
     }
     return <div style={divStyle}>
         <div>

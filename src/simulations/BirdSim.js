@@ -66,15 +66,13 @@ class BirdSimulation {
         this.setLinearRepulse(true)
         this.setLinearApproach(true)
         this.setRedBird(true)
+
+        this.setCircleAttractMode(true)
+        this.setCenterAttractDist(200)
+        this.setCenterAttractValue(1)
         
         this.centerX = canvas.width * 0.5
         this.centerY = canvas.height * 0.5
-
-        this.centerAttractMinDist = 200
-        this.centerAttractMaxDist = 300
-        this.centerAttractMinDistSq = this.centerAttractMinDist * this.centerAttractMinDist
-        this.centerAttractMaxDistSq = this.centerAttractMaxDist * this.centerAttractMaxDist
-        this.centerAttarctValue = 1
     }
 
     clearSpaces() {
@@ -139,6 +137,19 @@ class BirdSimulation {
     setRedBird(value) {
         this.redBird = value
         this.birds[0].color = this.redBird ? '#FF0000' : '#0000FF'
+    }
+
+    setCircleAttractMode(value) {
+        this.circleCenterMode = value
+    }
+
+    setCenterAttractDist(value) {
+        this.centerAttractDist = value
+        this.centerAttractDistSq = this.centerAttractDist * this.centerAttractDist
+    }
+
+    setCenterAttractValue(value) {
+        this.centerAttractValue = value
     }
 
     flockBehaviour(bird, dt) {
@@ -212,8 +223,8 @@ class BirdSimulation {
         const centerOffsetY = this.centerY - bird.position.y
         const centerDistanceSq = centerOffsetX * centerOffsetX + centerOffsetY * centerOffsetY
 
-        if (centerDistanceSq > this.centerAttractMinDistSq) {
-            bird.velocity.add(new Vec2D.Vector(centerOffsetX, centerOffsetY).unit().multiplyByScalar(this.centerAttarctValue))
+        if (centerDistanceSq > this.centerAttractDistSq) {
+            bird.velocity.add(new Vec2D.Vector(centerOffsetX, centerOffsetY).unit().multiplyByScalar(this.centerAttractValue))
         }
 
         bird.position.add(bird.velocity.multiplyByScalar(dt))
