@@ -4,11 +4,15 @@ import flockSim from '../simulations/FlockSim'
 import Slider from 'react-input-slider'
 
 
-const Simulation = () => {    
+const FlockSimulation = () => {    
     const [birds, setBirds] = useState({ x: 10 })
     const canvasElement = useRef(null)
     const canvasStyle = {
         border: ' 1px solid #aaa',
+    }
+    const sliderDivStyle = {
+        paddingLeft: '10px',
+        paddingRight: '10px'
     }
 
     const startHook = () => {
@@ -25,8 +29,8 @@ const Simulation = () => {
     useEffect(startHook, [])
 
     return <div>
-        <canvas style={canvasStyle} ref={canvasElement} width="400" height="300" />
-        <div>
+        <canvas style={canvasStyle} ref={canvasElement} width="800" height="450" />
+        <div style={sliderDivStyle}>
             <div>
                 {`Birds: ${birds.x}`}
             </div>
@@ -42,4 +46,4 @@ const Simulation = () => {
     </div>
 }
 
-export default Simulation
+export default FlockSimulation

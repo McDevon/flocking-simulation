@@ -1,14 +1,20 @@
 import React, { useEffect } from 'react'
-import Simulation from './components/Simulation'
+import FlockSimulation from './components/FlockSimulation'
 
 const App = props => {
+  const divStyle = {
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    maxWidth: '800px'
+}
+
   useEffect(() => {
     console.log('app effect')
   })
 
   return (
-    <div>
-      <Simulation />
+    <div style={divStyle}>
+      <FlockSimulation />
     </div>
   )
 }
