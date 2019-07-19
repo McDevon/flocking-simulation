@@ -198,7 +198,7 @@ class BirdSimulation {
     }
 
     update(dt, cx) {
-        for (let x = 0; x < this.birdCount; x++) {
+        for (let x = this.birdCount - 1; x >= 0; x--) {
             const bird = this.birds[x]
             bird.index = x
             this.flockBehaviour(bird, dt)
