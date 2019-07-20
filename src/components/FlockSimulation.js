@@ -30,9 +30,11 @@ const FlockSimulation = () => {
     }
     const controlAreaStyle = {
         paddingLeft: '10px',
-        paddingRight: '10px'
+        paddingRight: '10px',
+        textAlign: 'center'
     }
     const columnStyle = {
+        textAlign: 'left',
         display: 'inline-block',
         verticalAlign: 'top',
         width: '200px',
@@ -188,7 +190,6 @@ const FlockSimulation = () => {
                 />
             </div>
             <div style={columnStyle}>
-                {}
                 <SimSwitch
                     label='Gravity' value={circleAttractMode}
                     onLabel='Circle' offLabel='Box'
