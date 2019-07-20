@@ -74,6 +74,12 @@ class BirdSimulation {
         this.setBoxAttractWidth(800)
         this.setBoxAttractHeight(100)
         this.setBoxAttractValue(1)
+
+        this.setPredator(false)
+        this.setPredatorPosition(0, 0)
+        this.setPredatorDistance(100)
+        this.setPredatorValue(50)
+        this.setLinearPredator(true)
         
         this.centerX = canvas.width * 0.5
         this.centerY = canvas.height * 0.5
@@ -120,6 +126,7 @@ class BirdSimulation {
 
     setFlightSpeed(value) {
         this.flightSpeed = value
+        this.predatorValue = value
     }
 
     setApproachValue(value) {
@@ -166,6 +173,26 @@ class BirdSimulation {
 
     setBoxAttractHeight(value) {
         this.boxAttractVerticalDist = value * 0.5
+    }
+
+    setPredatorPosition(x, y) {
+        this.predatorPosition = new Vec2D.Vector(x, y)
+    }
+
+    setPredator(value) {
+        this.predator = value
+    }
+
+    setPredatorDistance(value) {
+        this.predatorDistanceSq = value * value
+    }
+
+    setPredatorValue(value) {
+        this.predatorValue = value
+    }
+
+    setLinearPredator(value) {
+        this.linearPredator = value
     }
 
     flockBehaviour(bird, dt) {
@@ -252,6 +279,16 @@ class BirdSimulation {
             }
             if (Math.abs(verticalDist) > this.boxAttractVerticalDist) {
                 bird.velocity.add(new Vec2D.Vector(0, Math.sign(verticalDist)).multiplyByScalar(this.boxAttractValue))
+            }
+        }
+
+        if (this.predator) {
+            const predatorOffsetX = bird.position.x - this.predatorPosition.x
+            const predatorOffsetY = bird.position.y - this.predatorPosition.y
+            const predatorDistanceSq = predatorOffsetX * predatorOffsetX + predatorOffsetY * predatorOffsetY
+
+            if (predatorDistanceSq < this.predatorDistanceSq) {
+                bird.velocity.add(new Vec2D.Vector(predatorOffsetX, predatorOffsetY).unit().multiplyByScalar(this.predatorValue))
             }
         }
 

@@ -7,7 +7,7 @@ import CircleGravityControls from './CircleGravityControls'
 import BoxGravityControls from './BoxGravityControls'
 
 const FlockSimulation = () => {
-    const [birds, setBirds] = useState({ x: 1500 })
+    const [birds, setBirds] = useState({ x: 10 })
     const [flightSpeed, setFlightSpeed] = useState({ x: 50 })
     const [approachDistance, setApproachDistance] = useState({ x: 60 })
     const [repulseDistance, setRepulseDistance] = useState({ x: 30 })
@@ -44,7 +44,9 @@ const FlockSimulation = () => {
 
     const startHook = () => {
         console.log('start hook')
+
         startRender(canvasElement.current, birdSim())
+
         canvasElement.current.simulation.setBirdCount(birds.x)
         canvasElement.current.simulation.setFlightSpeed(flightSpeed.x)
         canvasElement.current.simulation.setApproachDistance(approachDistance.x)
@@ -60,6 +62,42 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setBoxAttractWidth(boxWidth.x)
         canvasElement.current.simulation.setBoxAttractHeight(boxHeight.x)
         canvasElement.current.simulation.setBoxAttractValue(boxGravityValue.x)
+
+        window.addEventListener("mousedown", (event) => {
+            const rect = canvasElement.current.getBoundingClientRect()
+            if (event.clientX < rect.left || event.clientY < rect.top
+                || event.clientX > rect.right || event.clientY > rect.bottom) {
+                return
+            }
+            canvasElement.current.simulation.setPredator(true)
+        })
+
+        window.addEventListener("mouseup", (event) => {
+            const rect = canvasElement.current.getBoundingClientRect()
+            if (event.clientX < rect.left || event.clientY < rect.top
+                || event.clientX > rect.right || event.clientY > rect.bottom) {
+                return
+            }
+            canvasElement.current.simulation.setPredator(false)
+        })
+
+        window.addEventListener("mousemove", (event) => {
+            const rect = canvasElement.current.getBoundingClientRect()
+            if (event.clientX < rect.left || event.clientY < rect.top
+                || event.clientX > rect.right || event.clientY > rect.bottom) {
+                canvasElement.current.simulation.setPredator(false)
+                return
+            }
+            const x = (event.clientX - rect.left) / (rect.right - rect.left) * canvasElement.current.width
+            const y = (event.clientY - rect.top) / (rect.bottom - rect.top) * canvasElement.current.height
+            canvasElement.current.simulation.setPredatorPosition(x, y)
+        })
+
+        return () => {
+            window.removeEventListener("mousemove")
+            window.removeEventListener("mouseup")
+            window.removeEventListener("mousedown")
+        }
     }
 
     const changeBirds = () => ({ x }) => {
@@ -206,7 +244,7 @@ const FlockSimulation = () => {
                         width={boxWidth.x}
                         changeWidth={changeGravityBoxWidth}
                         height={boxHeight.x}
-                        changeHeight={changeGravityBoxHeight}/>}
+                        changeHeight={changeGravityBoxHeight} />}
             </div>
         </div>
     </div>
