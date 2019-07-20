@@ -3,43 +3,8 @@ import startRender from '../simulations/RenderLoop'
 import birdSim from '../simulations/BirdSim'
 import SimSlider from './SimSlider';
 import SimSwitch from './SimSwitch';
-
-const CircleGravityControls = ({ force, changeForce,
-    diameter, changeDiameter }) =>
-    <div>
-        <SimSlider
-            label='Diameter' value={diameter}
-            min={0} max={2000} step={10}
-            onChange={changeDiameter}
-        />
-        <SimSlider
-            label='Gravity force' value={force.toFixed(1)}
-            min={0} max={10} step={0.1}
-            onChange={changeForce}
-        />
-    </div>
-
-const BoxGravityControls = ({ force, changeForce,
-    width, changeWidth,
-    height, changeHeight }) =>
-    <div>
-        <SimSlider
-            label='Width' value={width}
-            min={0} max={2000} step={10}
-            onChange={changeWidth}
-        />
-        <SimSlider
-            label='Height' value={height}
-            min={0} max={2000} step={10}
-            onChange={changeHeight}
-        />
-        <SimSlider
-            label='Gravity force' value={force.toFixed(1)}
-            min={0} max={10} step={0.1}
-            onChange={changeForce}
-        />
-    </div>
-
+import CircleGravityControls from './CircleGravityControls'
+import BoxGravityControls from './BoxGravityControls'
 
 const FlockSimulation = () => {
     const [birds, setBirds] = useState({ x: 1500 })
