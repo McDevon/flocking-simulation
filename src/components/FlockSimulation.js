@@ -54,6 +54,7 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setLinearApproach(linearApproach)
         canvasElement.current.simulation.setLinearRepulse(linearRepulse)
         canvasElement.current.simulation.setRedBird(redBird)
+        canvasElement.current.simulation.setCircleAttractMode(circleAttractMode)
         canvasElement.current.simulation.setCenterAttractDiameter(circleGravityDiameter.x)
         canvasElement.current.simulation.setCenterAttractValue(circleGravityValue.x)
         canvasElement.current.simulation.setBoxAttractWidth(boxWidth.x)
