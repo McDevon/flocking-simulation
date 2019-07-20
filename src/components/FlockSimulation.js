@@ -4,40 +4,59 @@ import birdSim from '../simulations/BirdSim'
 import SimSlider from './SimSlider';
 import SimSwitch from './SimSwitch';
 
-const GravityControls = ({ circleMode, circleValue, changeCircleValue, circleDistance, changeCircleDistance }) => {
-    if (circleMode) {
-        return <div>
-            <SimSlider
-                label='Gravity min distance' value={circleDistance}
-                min={0} max={1000} step={10}
-                onChange={changeCircleDistance}
-            />
-            <SimSlider
-                label='Gravity force' value={circleValue.toFixed(1)}
-                min={0} max={10} step={0.1}
-                onChange={changeCircleValue}
-            />
-        </div>
-    }
-
-    return <div>
-        Box
+const CircleGravityControls = ({ force, changeForce,
+    diameter, changeDiameter }) =>
+    <div>
+        <SimSlider
+            label='Diameter' value={diameter}
+            min={0} max={2000} step={10}
+            onChange={changeDiameter}
+        />
+        <SimSlider
+            label='Gravity force' value={force.toFixed(1)}
+            min={0} max={10} step={0.1}
+            onChange={changeForce}
+        />
     </div>
-}
+
+const BoxGravityControls = ({ force, changeForce,
+    width, changeWidth,
+    height, changeHeight }) =>
+    <div>
+        <SimSlider
+            label='Width' value={width}
+            min={0} max={2000} step={10}
+            onChange={changeWidth}
+        />
+        <SimSlider
+            label='Height' value={height}
+            min={0} max={2000} step={10}
+            onChange={changeHeight}
+        />
+        <SimSlider
+            label='Gravity force' value={force.toFixed(1)}
+            min={0} max={10} step={0.1}
+            onChange={changeForce}
+        />
+    </div>
+
 
 const FlockSimulation = () => {
-    const [birds, setBirds] = useState({ x: 10 })
+    const [birds, setBirds] = useState({ x: 1500 })
     const [flightSpeed, setFlightSpeed] = useState({ x: 50 })
-    const [approachDistance, setApproachDistance] = useState({ x: 30 })
-    const [repulseDistance, setRepulseDistance] = useState({ x: 15 })
+    const [approachDistance, setApproachDistance] = useState({ x: 60 })
+    const [repulseDistance, setRepulseDistance] = useState({ x: 30 })
     const [approachValue, setApproachValue] = useState({ x: 0.5 })
     const [repulseValue, setRepulseValue] = useState({ x: 3 })
     const [linearApproach, setLinearApproach] = useState(0)
     const [linearRepulse, setLinearRepulse] = useState(1)
     const [redBird, setRedBird] = useState(1)
-    const [circleAttractMode, setCircleAttractMode] = useState(1)
-    const [circleGravityDistance, setCircleGravityDistance] = useState({ x: 200 })
+    const [circleAttractMode, setCircleAttractMode] = useState(0)
+    const [circleGravityDiameter, setCircleGravityDiameter] = useState({ x: 200 })
     const [circleGravityValue, setCircleGravityValue] = useState({ x: 1 })
+    const [boxWidth, setBoxWidth] = useState({ x: 600 })
+    const [boxHeight, setBoxHeight] = useState({ x: 50 })
+    const [boxGravityValue, setBoxGravityValue] = useState({ x: 1 })
 
     const canvasElement = useRef(null)
 
@@ -68,8 +87,11 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setLinearApproach(linearApproach)
         canvasElement.current.simulation.setLinearRepulse(linearRepulse)
         canvasElement.current.simulation.setRedBird(redBird)
-        canvasElement.current.simulation.setCenterAttractDist(circleGravityDistance.x)
-        //canvasElement.current.simulation.setCenterAttractValue(circleGravityValue.x)
+        canvasElement.current.simulation.setCenterAttractDiameter(circleGravityDiameter.x)
+        canvasElement.current.simulation.setCenterAttractValue(circleGravityValue.x)
+        canvasElement.current.simulation.setBoxAttractWidth(boxWidth.x)
+        canvasElement.current.simulation.setBoxAttractHeight(boxHeight.x)
+        canvasElement.current.simulation.setBoxAttractValue(boxGravityValue.x)
     }
 
     const changeBirds = () => ({ x }) => {
@@ -122,9 +144,9 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setCircleAttractMode(x)
     }
 
-    const changeCircleGravityDistance = () => ({ x }) => {
-        setCircleGravityDistance({ x: x })
-        //canvasElement.current.simulation.setCenterAttractDist(x)
+    const changeCircleGravityDiameter = () => ({ x }) => {
+        setCircleGravityDiameter({ x: x })
+        canvasElement.current.simulation.setCenterAttractDiameter(x)
     }
 
     const changeCircleGravityValue = () => ({ x }) => {
@@ -132,10 +154,25 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setCenterAttractValue(x)
     }
 
+    const changeBoxGravityValue = () => ({ x }) => {
+        setBoxGravityValue({ x: x })
+        canvasElement.current.simulation.setBoxAttractValue(x)
+    }
+
+    const changeGravityBoxWidth = () => ({ x }) => {
+        setBoxWidth({ x: x })
+        canvasElement.current.simulation.setBoxAttractWidth(x)
+    }
+
+    const changeGravityBoxHeight = () => ({ x }) => {
+        setBoxHeight({ x: x })
+        canvasElement.current.simulation.setBoxAttractHeight(x)
+    }
+
     useEffect(startHook, [])
 
     return <div>
-        <canvas style={canvasStyle} ref={canvasElement} width="800" height="450" />
+        <canvas style={canvasStyle} ref={canvasElement} width="900" height="500" />
         <div style={controlAreaStyle}>
             <div style={columnStyle}>
                 <SimSlider
@@ -186,19 +223,23 @@ const FlockSimulation = () => {
                 />
             </div>
             <div style={columnStyle}>
+                {}
                 <SimSwitch
                     label='Gravity' value={circleAttractMode}
                     onLabel='Circle' offLabel='Box'
                     onChange={changeCircleAttractMode}
                 />
-                <GravityControls
-                    circleMode={circleAttractMode}
-                    
-                    circleDistance={circleGravityDistance.x}
-                    changeCircleDistance={changeCircleGravityDistance}
-                    circleValue={circleGravityValue.x}
-                    changeCircleValue={changeCircleGravityValue}
-                />
+                {circleAttractMode ?
+                    <CircleGravityControls diameter={circleGravityDiameter.x}
+                        changeDiameter={changeCircleGravityDiameter}
+                        force={circleGravityValue.x}
+                        changeForce={changeCircleGravityValue} /> :
+                    <BoxGravityControls force={boxGravityValue.x}
+                        changeForce={changeBoxGravityValue}
+                        width={boxWidth.x}
+                        changeWidth={changeGravityBoxWidth}
+                        height={boxHeight.x}
+                        changeHeight={changeGravityBoxHeight}/>}
             </div>
         </div>
     </div>

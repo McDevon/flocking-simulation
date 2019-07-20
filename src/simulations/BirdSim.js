@@ -68,8 +68,12 @@ class BirdSimulation {
         this.setRedBird(true)
 
         this.setCircleAttractMode(true)
-        this.setCenterAttractDist(200)
+        this.setCenterAttractDiameter(400)
         this.setCenterAttractValue(1)
+
+        this.setBoxAttractWidth(800)
+        this.setBoxAttractHeight(100)
+        this.setBoxAttractValue(1)
         
         this.centerX = canvas.width * 0.5
         this.centerY = canvas.height * 0.5
@@ -143,13 +147,25 @@ class BirdSimulation {
         this.circleCenterMode = value
     }
 
-    setCenterAttractDist(value) {
-        this.centerAttractDist = value
-        this.centerAttractDistSq = this.centerAttractDist * this.centerAttractDist
+    setCenterAttractDiameter(value) {
+        this.centerAttractRadius = value * 0.5
+        this.centerAttractRadiusSq = this.centerAttractRadius * this.centerAttractRadius
     }
 
     setCenterAttractValue(value) {
         this.centerAttractValue = value
+    }
+
+    setBoxAttractValue(value) {
+        this.boxAttractValue = value
+    }
+
+    setBoxAttractWidth(value) {
+        this.boxAttractHorizontalDist = value * 0.5
+    }
+
+    setBoxAttractHeight(value) {
+        this.boxAttractVerticalDist = value * 0.5
     }
 
     flockBehaviour(bird, dt) {
@@ -219,12 +235,24 @@ class BirdSimulation {
             handleOther(other)
         }*/
 
-        const centerOffsetX = this.centerX - bird.position.x
-        const centerOffsetY = this.centerY - bird.position.y
-        const centerDistanceSq = centerOffsetX * centerOffsetX + centerOffsetY * centerOffsetY
+        if (this.circleCenterMode) {
+            const centerOffsetX = this.centerX - bird.position.x
+            const centerOffsetY = this.centerY - bird.position.y
+            const centerDistanceSq = centerOffsetX * centerOffsetX + centerOffsetY * centerOffsetY
 
-        if (centerDistanceSq > this.centerAttractDistSq) {
-            bird.velocity.add(new Vec2D.Vector(centerOffsetX, centerOffsetY).unit().multiplyByScalar(this.centerAttractValue))
+            if (centerDistanceSq > this.centerAttractRadiusSq) {
+                bird.velocity.add(new Vec2D.Vector(centerOffsetX, centerOffsetY).unit().multiplyByScalar(this.centerAttractValue))
+            }
+        } else {
+            const horizontalDist = this.centerX - bird.position.x
+            const verticalDist = this.centerY - bird.position.y
+
+            if (Math.abs(horizontalDist) > this.boxAttractHorizontalDist) {
+                bird.velocity.add(new Vec2D.Vector(Math.sign(horizontalDist), 0).multiplyByScalar(this.boxAttractValue))
+            }
+            if (Math.abs(verticalDist) > this.boxAttractVerticalDist) {
+                bird.velocity.add(new Vec2D.Vector(0, Math.sign(verticalDist)).multiplyByScalar(this.boxAttractValue))
+            }
         }
 
         bird.position.add(bird.velocity.multiplyByScalar(dt))
