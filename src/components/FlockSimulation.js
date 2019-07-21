@@ -18,9 +18,12 @@ const FlockSimulation = () => {
     const [redBird, setRedBird] = useState(1)
     const [circleAttractMode, setCircleAttractMode] = useState(0)
     const [circleGravityDiameter, setCircleGravityDiameter] = useState({ x: 200 })
+    const [circleGravityMaxDiameter, setCircleGravityMaxDiameter] = useState({ x: 400 })
     const [circleGravityValue, setCircleGravityValue] = useState({ x: 1 })
-    const [boxWidth, setBoxWidth] = useState({ x: 600 })
+    const [boxWidth, setBoxWidth] = useState({ x: 500 })
     const [boxHeight, setBoxHeight] = useState({ x: 50 })
+    const [boxMaxWidth, setBoxMaxWidth] = useState({ x: 700 })
+    const [boxMaxHeight, setBoxMaxHeight] = useState({ x: 100 })
     const [boxGravityValue, setBoxGravityValue] = useState({ x: 1 })
     const [triggers, setTriggers] = useState(0)
     const [individualFlocking, setIndividualFlocking] = useState(0)
@@ -60,9 +63,12 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setRedBird(redBird)
         canvasElement.current.simulation.setCircleAttractMode(circleAttractMode)
         canvasElement.current.simulation.setCenterAttractDiameter(circleGravityDiameter.x)
+        canvasElement.current.simulation.setCenterAttractFarthestDiameter(circleGravityMaxDiameter.x)
         canvasElement.current.simulation.setCenterAttractValue(circleGravityValue.x)
         canvasElement.current.simulation.setBoxAttractWidth(boxWidth.x)
         canvasElement.current.simulation.setBoxAttractHeight(boxHeight.x)
+        canvasElement.current.simulation.setBoxAttractFarthestWidth(boxMaxWidth.x)
+        canvasElement.current.simulation.setBoxAttractFarthestHeight(boxMaxHeight.x)
         canvasElement.current.simulation.setBoxAttractValue(boxGravityValue.x)
         canvasElement.current.simulation.setTriggerVisualizations(triggers)
         canvasElement.current.simulation.setIndividualFlocking(individualFlocking)
@@ -159,6 +165,11 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setCenterAttractDiameter(x)
     }
 
+    const changeCircleGravityMaxDiameter = () => ({ x }) => {
+        setCircleGravityMaxDiameter({ x: x })
+        canvasElement.current.simulation.setCenterAttractFarthestDiameter(x)
+    }
+
     const changeCircleGravityValue = () => ({ x }) => {
         setCircleGravityValue({ x: x })
         canvasElement.current.simulation.setCenterAttractValue(x)
@@ -177,6 +188,16 @@ const FlockSimulation = () => {
     const changeGravityBoxHeight = () => ({ x }) => {
         setBoxHeight({ x: x })
         canvasElement.current.simulation.setBoxAttractHeight(x)
+    }
+
+    const changeGravityBoxMaxWidth = () => ({ x }) => {
+        setBoxMaxWidth({ x: x })
+        canvasElement.current.simulation.setBoxAttractFarthestWidth(x)
+    }
+
+    const changeGravityBoxMaxHeight = () => ({ x }) => {
+        setBoxMaxHeight({ x: x })
+        canvasElement.current.simulation.setBoxAttractFarthestHeight(x)
     }
 
     const changeTriggers = () => (x) => {
@@ -252,13 +273,15 @@ const FlockSimulation = () => {
             </div>
             <div style={columnStyle}>
                 <SimSwitch
-                    label='Gravity' value={circleAttractMode}
+                    label='Attract mode' value={circleAttractMode}
                     onLabel='Circle' offLabel='Box'
                     onChange={changeCircleAttractMode}
                 />
                 {circleAttractMode ?
                     <CircleGravityControls diameter={circleGravityDiameter.x}
                         changeDiameter={changeCircleGravityDiameter}
+                        maxDiameter={circleGravityMaxDiameter.x}
+                        changeMaxDiameter={changeCircleGravityMaxDiameter}
                         force={circleGravityValue.x}
                         changeForce={changeCircleGravityValue} /> :
                     <BoxGravityControls force={boxGravityValue.x}
@@ -266,7 +289,11 @@ const FlockSimulation = () => {
                         width={boxWidth.x}
                         changeWidth={changeGravityBoxWidth}
                         height={boxHeight.x}
-                        changeHeight={changeGravityBoxHeight} />}
+                        changeHeight={changeGravityBoxHeight}
+                        maxWidth={boxMaxWidth.x}
+                        changeMaxWidth={changeGravityBoxMaxWidth}
+                        maxHeight={boxMaxHeight.x}
+                        changeMaxHeight={changeGravityBoxMaxHeight} />}
             </div>
         </div>
     </div>

@@ -3,20 +3,32 @@ import SimSlider from './SimSlider';
 
 const BoxGravityControls = ({ force, changeForce,
     width, changeWidth,
-    height, changeHeight }) =>
+    height, changeHeight,
+    maxWidth, changeMaxWidth,
+    maxHeight, changeMaxHeight }) =>
     <div>
         <SimSlider
-            label='Width' value={width}
+            label='Min Width' value={width}
             min={0} max={2000} step={10}
             onChange={changeWidth}
         />
         <SimSlider
-            label='Height' value={height}
+            label='Min Height' value={height}
             min={0} max={2000} step={10}
             onChange={changeHeight}
         />
         <SimSlider
-            label='Gravity force' value={force.toFixed(1)}
+            label='Max Width' value={maxWidth}
+            min={0} max={2000} step={10}
+            onChange={changeMaxWidth}
+        />
+        <SimSlider
+            label='Max Height' value={maxHeight}
+            min={0} max={2000} step={10}
+            onChange={changeMaxHeight}
+        />
+        <SimSlider
+            label='Attract force' value={force.toFixed(1)}
             min={0} max={10} step={0.1}
             onChange={changeForce}
         />
