@@ -15,8 +15,6 @@ const startRender = (canvas, item) => {
     vendorCheck()
 
     let cx = canvas.getContext('2d'),
-        cw = canvas.width,
-        ch = canvas.height,
         lastTime = (new Date()).getTime(),
         currentTime = 0,
         dt = 0,
