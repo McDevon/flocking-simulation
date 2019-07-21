@@ -346,6 +346,8 @@ class BirdSimulation {
     }
 
     render(cx) {
+        cx.clearRect(0, 0, this.width, this.height)
+
         for (let x = this.birdCount - 1; x >= 0; x--) {
             const bird = this.birds[x]
             bird.draw(cx)

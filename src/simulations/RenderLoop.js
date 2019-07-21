@@ -35,8 +35,6 @@ const startRender = (canvas, item) => {
         currentTime = (new Date()).getTime()
         dt = Math.min((currentTime - lastTime) / 1000, 0.03)
 
-        cx.clearRect(0, 0, cw, ch)
-
         fixedDeltaCounter += dt		
         fixedCount = 0
 		
