@@ -1,14 +1,21 @@
 import * as Vec2D from 'vector2d'
 
-Vec2D.Vector.prototype.rotate = function(angle) {
+Vec2D.Vector.prototype.rotate = function (angle) {
     const x = this._x, y = this._y
     this._x = x * Math.cos(angle) - y * Math.sin(angle)
     this._y = x * Math.sin(angle) + y * Math.cos(angle)
     return this
 }
 
-Vec2D.Vector.prototype.angle = function() {
+Vec2D.Vector.prototype.angle = function () {
     return Math.atan2(this._y, this._x)
+}
+
+CanvasRenderingContext2D.prototype.line = function (x1, y1, x2, y2) {
+    this.beginPath()
+    this.moveTo(x1, y1)
+    this.lineTo(x2, y2)
+    this.stroke()
 }
 
 class Bird {
@@ -56,7 +63,7 @@ class BirdSimulation {
         }
 
         this.spaces = {}
-        
+
         this.setBirdCount(100)
         this.setApproachDistance(30)
         this.setRepulseDistance(15)
@@ -72,21 +79,24 @@ class BirdSimulation {
         this.setRedBird(true)
 
         this.setCircleAttractMode(true)
-        this.setCenterAttractDiameter(400)
+        this.setCenterAttractDiameter(300)
+        this.setCenterAttractFarthestDiameter(800)
         this.setCenterAttractValue(1)
 
-        this.setBoxAttractWidth(800)
-        this.setBoxAttractHeight(100)
+        this.setBoxAttractWidth(600)
+        this.setBoxAttractFarthestWidth(400)
+        this.setBoxAttractHeight(50)
+        this.setBoxAttractFarthestHeight(100)
         this.setBoxAttractValue(1)
 
         this.setPredator(false)
         this.setPredatorPosition(0, 0)
-        this.setPredatorFullEffectRadius(0)
+        this.setPredatorFullEffectRadius(30)
         this.setPredatorMaxRadius(150)
         this.setLinearPredator(true)
 
         this.setTriggerVisualizations(false)
-        
+
         this.centerX = canvas.width * 0.5
         this.centerY = canvas.height * 0.5
     }
@@ -146,7 +156,7 @@ class BirdSimulation {
     setLinearApproach(value) {
         this.linearApproach = value
     }
-    
+
     setLinearRepulse(value) {
         this.linearRepulse = value
     }
@@ -167,7 +177,7 @@ class BirdSimulation {
 
     setCenterAttractFarthestDiameter(value) {
         this.centerAttractFarthestRadius = value * 0.5
-        this.centerAttractFarthestRadiusSq = this.centerAttractRadius * this.centerAttractRadius
+        this.centerAttractFarthestRadiusSq = this.centerAttractFarthestRadius * this.centerAttractFarthestRadius
     }
 
     setCenterAttractValue(value) {
@@ -238,8 +248,8 @@ class BirdSimulation {
         if (bird.space !== spaceName) {
             if (this.spaces.hasOwnProperty(bird.space)) {
                 const space = this.spaces[bird.space]
-                for( var i = 0; i < space.length; i++) { 
-                    if ( space[i] === bird) {
+                for (var i = 0; i < space.length; i++) {
+                    if (space[i] === bird) {
                         space.splice(i, 1);
                         break
                     }
@@ -263,8 +273,8 @@ class BirdSimulation {
             const flockingMultiplier = this.individualFlocking ? bird.flockingMultiplier : 1
             if (bird === other
                 || distanceSq > biggerDistanceSq) {
-                    return
-                }
+                return
+            }
             if (distanceSq < this.repulseSq) {
                 if (this.linearRepulse) {
                     const multiplier = (this.repulseDistance - Math.sqrt(distanceSq)) / this.repulseDistance
@@ -302,17 +312,34 @@ class BirdSimulation {
             const centerDistanceSq = centerOffsetX * centerOffsetX + centerOffsetY * centerOffsetY
 
             if (centerDistanceSq > this.centerAttractRadiusSq) {
-                bird.velocity.add(new Vec2D.Vector(centerOffsetX, centerOffsetY).unit().multiplyByScalar(this.centerAttractValue * bird.effectMultiplier))
+                if (centerDistanceSq < this.centerAttractFarthestRadiusSq) {
+                    const multiplier = (Math.sqrt(centerDistanceSq) - this.centerAttractRadius) / (this.centerAttractFarthestRadius - this.centerAttractRadius)
+                    bird.velocity.add(new Vec2D.Vector(centerOffsetX, centerOffsetY).unit().multiplyByScalar(this.centerAttractValue * multiplier * bird.effectMultiplier))
+                } else {
+                    bird.velocity.add(new Vec2D.Vector(centerOffsetX, centerOffsetY).unit().multiplyByScalar(this.centerAttractValue * bird.effectMultiplier))               
+                }
             }
         } else {
             const horizontalDist = this.centerX - bird.position.x
             const verticalDist = this.centerY - bird.position.y
+            const absH = Math.abs(horizontalDist)
+            const absV = Math.abs(verticalDist)
 
-            if (Math.abs(horizontalDist) > this.boxAttractHorizontalDist) {
-                bird.velocity.add(new Vec2D.Vector(Math.sign(horizontalDist), 0).multiplyByScalar(this.boxAttractValue * bird.effectMultiplier))
+            if (absH > this.boxAttractHorizontalDist) {
+                if (absH < this.boxAttractFarthestHorizontalDist) {
+                    const multiplier = (absH - this.boxAttractHorizontalDist) / (this.boxAttractFarthestHorizontalDist - this.boxAttractHorizontalDist)
+                    bird.velocity.add(new Vec2D.Vector(Math.sign(horizontalDist), 0).multiplyByScalar(this.boxAttractValue * multiplier * bird.effectMultiplier))
+                } else {
+                    bird.velocity.add(new Vec2D.Vector(Math.sign(horizontalDist), 0).multiplyByScalar(this.boxAttractValue * bird.effectMultiplier))
+                }
             }
-            if (Math.abs(verticalDist) > this.boxAttractVerticalDist) {
-                bird.velocity.add(new Vec2D.Vector(0, Math.sign(verticalDist)).multiplyByScalar(this.boxAttractValue * bird.effectMultiplier))
+            if (absV > this.boxAttractVerticalDist) {
+                if (absV < this.boxAttractFarthestVerticalDist) {
+                    const multiplier = (absV - this.boxAttractVerticalDist) / (this.boxAttractFarthestVerticalDist - this.boxAttractVerticalDist)
+                    bird.velocity.add(new Vec2D.Vector(0, Math.sign(verticalDist)).multiplyByScalar(this.boxAttractValue * multiplier * bird.effectMultiplier))
+                } else {
+                    bird.velocity.add(new Vec2D.Vector(0, Math.sign(verticalDist)).multiplyByScalar(this.boxAttractValue * bird.effectMultiplier))
+                }
             }
         }
 
@@ -342,11 +369,66 @@ class BirdSimulation {
     }
 
     update(_) {
-        
+
+    }
+
+    renderCircleAttractMode(cx) {
+        cx.fillStyle = '#DDDDDD'
+        cx.fillRect(0, 0, this.width, this.height)
+        cx.beginPath()
+        cx.fillStyle = '#EEEEEE'
+        cx.arc(this.centerX, this.centerY, this.centerAttractFarthestRadius, 0, Math.PI * 360)
+        cx.fill()
+        cx.beginPath()
+        cx.fillStyle = '#FFFFFF'
+        cx.arc(this.centerX, this.centerY, this.centerAttractRadius, 0, Math.PI * 360)
+        cx.fill()
+    }
+
+    renderBoxAttractMode(cx) {
+        cx.fillStyle = '#DDDDDD'
+        cx.fillRect(0, 0, this.width, this.height)
+        cx.fillStyle = '#EEEEEE'
+        const maxHorz = Math.max(this.boxAttractFarthestHorizontalDist, this.boxAttractHorizontalDist)
+        const maxVert = Math.max(this.boxAttractFarthestVerticalDist, this.boxAttractVerticalDist)
+        cx.fillRect(this.centerX - maxHorz, this.centerY - maxVert, maxHorz * 2, maxVert * 2)
+        cx.fillStyle = '#FFFFFF'
+        cx.fillRect(this.centerX - this.boxAttractHorizontalDist, this.centerY - this.boxAttractVerticalDist, this.boxAttractHorizontalDist * 2, this.boxAttractVerticalDist * 2)
+        cx.lineWidth = 0.2
+        cx.line(this.centerX - maxHorz, 0, this.centerX - maxHorz, this.height)
+        cx.line(this.centerX + maxHorz, 0, this.centerX + maxHorz, this.height)
+        cx.line(0, this.centerY - maxVert, this.width, this.centerY - maxVert)
+        cx.line(0, this.centerY + maxVert, this.width, this.centerY + maxVert)
+        cx.line(this.centerX - this.boxAttractHorizontalDist, 0, this.centerX - this.boxAttractHorizontalDist, this.height)
+        cx.line(this.centerX + this.boxAttractHorizontalDist, 0, this.centerX + this.boxAttractHorizontalDist, this.height)
+        cx.line(0, this.centerY - this.boxAttractVerticalDist, this.width, this.centerY - this.boxAttractVerticalDist)
+        cx.line(0, this.centerY + this.boxAttractVerticalDist, this.width, this.centerY + this.boxAttractVerticalDist)
+    }
+
+    renderPredator(cx) {
+        cx.fillStyle = '#D5AAAAAA'
+        cx.beginPath()
+        cx.arc(this.predatorPosition.x, this.predatorPosition.y, this.predatorMaxRadius, 0, Math.PI * 360)
+        cx.fill()
+        cx.fillStyle = '#DD8888AA'
+        cx.beginPath()
+        cx.arc(this.predatorPosition.x, this.predatorPosition.y, this.predatorFullEffectRadius, 0, Math.PI * 360)
+        cx.fill()
     }
 
     render(cx) {
         cx.clearRect(0, 0, this.width, this.height)
+
+        if (this.triggerVisualizations) {
+            if (this.circleCenterMode) {
+                this.renderCircleAttractMode(cx)
+            } else {
+                this.renderBoxAttractMode(cx)   
+            }
+            if (this.predator) {
+                this.renderPredator(cx)
+            }
+        }
 
         for (let x = this.birdCount - 1; x >= 0; x--) {
             const bird = this.birds[x]
