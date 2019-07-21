@@ -13,7 +13,7 @@ Vec2D.Vector.prototype.angle = function() {
 
 class Bird {
 
-    init(canvas) {
+    constructor(canvas) {
         this.canvas = canvas
         this.position = new Vec2D.Vector(Math.random() * canvas.width, Math.random() * canvas.height)
         this.velocity = new Vec2D.Vector(-5 + Math.random() * 10, -5 + Math.random() * 10)
@@ -48,8 +48,8 @@ class BirdSimulation {
 
         this.birds = []
         for (let i = 0; i < 2500; i++) {
-            const bird = new Bird()
-            bird.init(canvas)
+            const bird = new Bird(canvas)
+            bird.index = i
             this.birds.push(bird)
         }
 
@@ -295,11 +295,20 @@ class BirdSimulation {
         bird.position.add(bird.velocity.multiplyByScalar(dt))
     }
 
-    update(dt, cx) {
+    fixedUpdate(dt) {
         for (let x = this.birdCount - 1; x >= 0; x--) {
             const bird = this.birds[x]
-            bird.index = x
             this.flockBehaviour(bird, dt)
+        }
+    }
+
+    update(_) {
+        
+    }
+
+    render(cx) {
+        for (let x = this.birdCount - 1; x >= 0; x--) {
+            const bird = this.birds[x]
             bird.draw(cx)
         }
     }

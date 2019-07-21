@@ -19,7 +19,12 @@ const startRender = (canvas, item) => {
         ch = canvas.height,
         lastTime = (new Date()).getTime(),
         currentTime = 0,
-        dt = 0
+        dt = 0,
+        fixedDeltaCounter = 0,
+        fixedCount = 0
+    
+    const maxLoops = 5,
+        fixedDelta = 1.0/60
     
     canvas.simulation = item
     item.init(canvas)
@@ -32,7 +37,26 @@ const startRender = (canvas, item) => {
 
         cx.clearRect(0, 0, cw, ch)
 
-        item.update(dt, cx)
+        fixedDeltaCounter += dt		
+        fixedCount = 0
+		
+		if (fixedDeltaCounter < fixedDelta) {
+			fixedDeltaCounter = fixedDelta
+		}
+		
+		while (fixedDeltaCounter >= fixedDelta && fixedCount < maxLoops) {
+			item.fixedUpdate(fixedDelta)
+			fixedDeltaCounter -= fixedDelta
+			fixedCount++
+		}
+		
+		if (fixedCount >= maxLoops) {
+			fixedDeltaCounter = 0
+		}
+
+        item.update(dt)
+
+        item.render(cx)
 
         lastTime = currentTime
     }
