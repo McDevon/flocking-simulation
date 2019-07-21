@@ -36,12 +36,10 @@ const FlockSimulation = () => {
         border: ' 1px solid #aaa',
     }
     const controlAreaStyle = {
-        paddingLeft: '10px',
-        paddingRight: '10px',
-        textAlign: 'center'
+        paddingLeft: '25px',
+        paddingRight: '25px',
     }
     const columnStyle = {
-        textAlign: 'left',
         display: 'inline-block',
         verticalAlign: 'top',
         width: '200px',
