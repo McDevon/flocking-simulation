@@ -17,6 +17,8 @@ class Bird {
         this.canvas = canvas
         this.position = new Vec2D.Vector(Math.random() * canvas.width, Math.random() * canvas.height)
         this.velocity = new Vec2D.Vector(-5 + Math.random() * 10, -5 + Math.random() * 10)
+        this.effectMultiplier = 0.1 + Math.random() * 0.9
+        this.flockingMultiplier = 0.5 + Math.random() * 0.5
         this.cw = canvas.width
         this.ch = canvas.height
         this.space = ''
@@ -63,6 +65,8 @@ class BirdSimulation {
         this.setApproachValue(0.5)
         this.setRepulseValue(3)
 
+        this.setIndividualFlocking(false)
+
         this.setLinearRepulse(true)
         this.setLinearApproach(true)
         this.setRedBird(true)
@@ -77,9 +81,11 @@ class BirdSimulation {
 
         this.setPredator(false)
         this.setPredatorPosition(0, 0)
-        this.setPredatorDistance(100)
-        this.setPredatorValue(50)
+        this.setPredatorFullEffectRadius(0)
+        this.setPredatorMaxRadius(150)
         this.setLinearPredator(true)
+
+        this.setTriggerVisualizations(false)
         
         this.centerX = canvas.width * 0.5
         this.centerY = canvas.height * 0.5
@@ -126,7 +132,7 @@ class BirdSimulation {
 
     setFlightSpeed(value) {
         this.flightSpeed = value
-        this.predatorValue = value
+        this.predatorValue = value * 1.5
     }
 
     setApproachValue(value) {
@@ -159,6 +165,11 @@ class BirdSimulation {
         this.centerAttractRadiusSq = this.centerAttractRadius * this.centerAttractRadius
     }
 
+    setCenterAttractFarthestDiameter(value) {
+        this.centerAttractFarthestRadius = value * 0.5
+        this.centerAttractFarthestRadiusSq = this.centerAttractRadius * this.centerAttractRadius
+    }
+
     setCenterAttractValue(value) {
         this.centerAttractValue = value
     }
@@ -171,8 +182,16 @@ class BirdSimulation {
         this.boxAttractHorizontalDist = value * 0.5
     }
 
+    setBoxAttractFarthestWidth(value) {
+        this.boxAttractFarthestHorizontalDist = value * 0.5
+    }
+
     setBoxAttractHeight(value) {
         this.boxAttractVerticalDist = value * 0.5
+    }
+
+    setBoxAttractFarthestHeight(value) {
+        this.boxAttractFarthestVerticalDist = value * 0.5
     }
 
     setPredatorPosition(x, y) {
@@ -183,8 +202,14 @@ class BirdSimulation {
         this.predator = value
     }
 
-    setPredatorDistance(value) {
-        this.predatorDistanceSq = value * value
+    setPredatorMaxRadius(value) {
+        this.predatorMaxRadius = value
+        this.predatorMaxRadiusSq = value * value
+    }
+
+    setPredatorFullEffectRadius(value) {
+        this.predatorFullEffectRadius = value
+        this.predatorFullEffectRadiusSq = value * value
     }
 
     setPredatorValue(value) {
@@ -193,6 +218,14 @@ class BirdSimulation {
 
     setLinearPredator(value) {
         this.linearPredator = value
+    }
+
+    setTriggerVisualizations(value) {
+        this.triggerVisualizations = value
+    }
+
+    setIndividualFlocking(value) {
+        this.individualFlocking = value
     }
 
     flockBehaviour(bird, dt) {
@@ -225,8 +258,9 @@ class BirdSimulation {
 
         const handleOther = (other) => {
             let offset = other.position.clone().subtract(bird.position)
-            let distanceSq = offset.x * offset.x + offset.y * offset.y
-            let biggerDistanceSq = Math.max(this.approachSq, this.repulseSq)
+            const distanceSq = offset.x * offset.x + offset.y * offset.y
+            const biggerDistanceSq = Math.max(this.approachSq, this.repulseSq)
+            const flockingMultiplier = this.individualFlocking ? bird.flockingMultiplier : 1
             if (bird === other
                 || distanceSq > biggerDistanceSq) {
                     return
@@ -234,16 +268,16 @@ class BirdSimulation {
             if (distanceSq < this.repulseSq) {
                 if (this.linearRepulse) {
                     const multiplier = (this.repulseDistance - Math.sqrt(distanceSq)) / this.repulseDistance
-                    offset.reverse().unit().multiplyByScalar(this.repulseValue * multiplier)
+                    offset.reverse().unit().multiplyByScalar(this.repulseValue * multiplier * flockingMultiplier)
                 } else {
-                    offset.reverse().unit().multiplyByScalar(this.repulseValue)
+                    offset.reverse().unit().multiplyByScalar(this.repulseValue * flockingMultiplier)
                 }
             } else {
                 if (this.linearApproach) {
                     const multiplier = (approacLength - (Math.sqrt(distanceSq) - this.repulseDistance)) / (this.approachDistance - this.repulseDistance)
-                    offset = other.velocity.clone().unit().multiplyByScalar(this.approachValue * multiplier)
+                    offset = other.velocity.clone().unit().multiplyByScalar(this.approachValue * multiplier * flockingMultiplier)
                 } else {
-                    offset = other.velocity.clone().unit().multiplyByScalar(this.approachValue)
+                    offset = other.velocity.clone().unit().multiplyByScalar(this.approachValue * flockingMultiplier)
                 }
             }
             bird.velocity.add(offset)
@@ -268,17 +302,17 @@ class BirdSimulation {
             const centerDistanceSq = centerOffsetX * centerOffsetX + centerOffsetY * centerOffsetY
 
             if (centerDistanceSq > this.centerAttractRadiusSq) {
-                bird.velocity.add(new Vec2D.Vector(centerOffsetX, centerOffsetY).unit().multiplyByScalar(this.centerAttractValue))
+                bird.velocity.add(new Vec2D.Vector(centerOffsetX, centerOffsetY).unit().multiplyByScalar(this.centerAttractValue * bird.effectMultiplier))
             }
         } else {
             const horizontalDist = this.centerX - bird.position.x
             const verticalDist = this.centerY - bird.position.y
 
             if (Math.abs(horizontalDist) > this.boxAttractHorizontalDist) {
-                bird.velocity.add(new Vec2D.Vector(Math.sign(horizontalDist), 0).multiplyByScalar(this.boxAttractValue))
+                bird.velocity.add(new Vec2D.Vector(Math.sign(horizontalDist), 0).multiplyByScalar(this.boxAttractValue * bird.effectMultiplier))
             }
             if (Math.abs(verticalDist) > this.boxAttractVerticalDist) {
-                bird.velocity.add(new Vec2D.Vector(0, Math.sign(verticalDist)).multiplyByScalar(this.boxAttractValue))
+                bird.velocity.add(new Vec2D.Vector(0, Math.sign(verticalDist)).multiplyByScalar(this.boxAttractValue * bird.effectMultiplier))
             }
         }
 
@@ -287,8 +321,13 @@ class BirdSimulation {
             const predatorOffsetY = bird.position.y - this.predatorPosition.y
             const predatorDistanceSq = predatorOffsetX * predatorOffsetX + predatorOffsetY * predatorOffsetY
 
-            if (predatorDistanceSq < this.predatorDistanceSq) {
-                bird.velocity.add(new Vec2D.Vector(predatorOffsetX, predatorOffsetY).unit().multiplyByScalar(this.predatorValue))
+            if (predatorDistanceSq < this.predatorMaxRadiusSq) {
+                if (predatorDistanceSq < this.predatorFullEffectRadiusSq) {
+                    bird.velocity.add(new Vec2D.Vector(predatorOffsetX, predatorOffsetY).unit().multiplyByScalar(this.predatorValue * bird.effectMultiplier))
+                } else {
+                    const multiplier = 1 - (Math.sqrt(predatorDistanceSq) - this.predatorFullEffectRadius) / (this.predatorMaxRadius - this.predatorFullEffectRadius)
+                    bird.velocity.add(new Vec2D.Vector(predatorOffsetX, predatorOffsetY).unit().multiplyByScalar(this.predatorValue * multiplier * bird.effectMultiplier))
+                }
             }
         }
 

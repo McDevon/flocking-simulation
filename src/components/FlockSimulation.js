@@ -7,7 +7,7 @@ import CircleGravityControls from './CircleGravityControls'
 import BoxGravityControls from './BoxGravityControls'
 
 const FlockSimulation = () => {
-    const [birds, setBirds] = useState({ x: 10 })
+    const [birds, setBirds] = useState({ x: 1500 })
     const [flightSpeed, setFlightSpeed] = useState({ x: 50 })
     const [approachDistance, setApproachDistance] = useState({ x: 60 })
     const [repulseDistance, setRepulseDistance] = useState({ x: 30 })
@@ -22,6 +22,8 @@ const FlockSimulation = () => {
     const [boxWidth, setBoxWidth] = useState({ x: 600 })
     const [boxHeight, setBoxHeight] = useState({ x: 50 })
     const [boxGravityValue, setBoxGravityValue] = useState({ x: 1 })
+    const [triggers, setTriggers] = useState(0)
+    const [individualFlocking, setIndividualFlocking] = useState(0)
 
     const canvasElement = useRef(null)
 
@@ -62,6 +64,8 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setBoxAttractWidth(boxWidth.x)
         canvasElement.current.simulation.setBoxAttractHeight(boxHeight.x)
         canvasElement.current.simulation.setBoxAttractValue(boxGravityValue.x)
+        canvasElement.current.simulation.setTriggerVisualizations(triggers)
+        canvasElement.current.simulation.setIndividualFlocking(individualFlocking)
 
         window.addEventListener("mousedown", (event) => {
             const rect = canvasElement.current.getBoundingClientRect()
@@ -175,6 +179,16 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setBoxAttractHeight(x)
     }
 
+    const changeTriggers = () => (x) => {
+        setTriggers(x)
+        canvasElement.current.simulation.setTriggerVisualizations(x)
+    }
+
+    const changeIndividualFlocking = () => (x) => {
+        setIndividualFlocking(x)
+        canvasElement.current.simulation.setIndividualFlocking(x)
+    }
+
     useEffect(startHook, [])
 
     return <div>
@@ -224,8 +238,16 @@ const FlockSimulation = () => {
                     onChange={changeLinearRepulse}
                 />
                 <SimSwitch
+                    label='Flocking variance' value={individualFlocking}
+                    onChange={changeIndividualFlocking}
+                />
+                <SimSwitch
                     label='Red bird' value={redBird}
                     onChange={changeRedBird}
+                />
+                <SimSwitch
+                    label='Show triggers' value={triggers}
+                    onChange={changeTriggers}
                 />
             </div>
             <div style={columnStyle}>
