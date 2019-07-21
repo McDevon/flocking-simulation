@@ -27,6 +27,8 @@ const FlockSimulation = () => {
     const [boxGravityValue, setBoxGravityValue] = useState({ x: 1 })
     const [triggers, setTriggers] = useState(0)
     const [individualFlocking, setIndividualFlocking] = useState(0)
+    const [predatorRadius, setPredatorRadius] = useState({ x: 30 })
+    const [predatorMaxRadius, setPredatorMaxRadius] = useState({ x: 150 })
 
     const canvasElement = useRef(null)
 
@@ -45,6 +47,9 @@ const FlockSimulation = () => {
         width: '200px',
         marginLeft: '5px',
         marginRight: '5px'
+    }
+    const titleStyle = {
+        margin: '5px'
     }
 
     const startHook = () => {
@@ -210,6 +215,16 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setIndividualFlocking(x)
     }
 
+    const changePredatorRadius = () => ({ x }) => {
+        setPredatorRadius({ x: x })
+        canvasElement.current.simulation.setPredatorFullEffectRadius(x)
+    }
+
+    const changePredatorMaxRadius = () => ({ x }) => {
+        setPredatorMaxRadius({ x: x })
+        canvasElement.current.simulation.setPredatorMaxRadius(x)
+    }
+
     useEffect(startHook, [])
 
     return <div>
@@ -294,6 +309,21 @@ const FlockSimulation = () => {
                         changeMaxWidth={changeGravityBoxMaxWidth}
                         maxHeight={boxMaxHeight.x}
                         changeMaxHeight={changeGravityBoxMaxHeight} />}
+            </div>
+            <div style={columnStyle}>
+                <div style={titleStyle}>
+                    Predator
+                </div>
+                <SimSlider
+                    label='Min Radius' value={predatorRadius.x}
+                    min={0} max={500} step={5}
+                    onChange={changePredatorRadius}
+                />
+                <SimSlider
+                    label='Max Radius' value={predatorMaxRadius.x}
+                    min={0} max={500} step={5}
+                    onChange={changePredatorMaxRadius}
+                />
             </div>
         </div>
     </div>
