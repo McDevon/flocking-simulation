@@ -7,6 +7,13 @@ Vec2D.Vector.prototype.rotate = function (angle) {
     return this
 }
 
+Vec2D.Vector.prototype.rotateTrig = function (sinAngle, cosAngle) {
+    const x = this._x, y = this._y
+    this._x = x * cosAngle - y * sinAngle
+    this._y = x * sinAngle + y * cosAngle
+    return this
+}
+
 Vec2D.Vector.prototype.angle = function () {
     return Math.atan2(this._y, this._x)
 }
@@ -33,17 +40,20 @@ class Bird {
     }
 
     draw(cx) {
-        const p1 = new Vec2D.Vector(10, 0), p2 = new Vec2D.Vector(-5, 5), p3 = new Vec2D.Vector(-5, -5)
+        const path = [new Vec2D.Vector(10, 0), new Vec2D.Vector(-5, 5), new Vec2D.Vector(-5, -5)]
         const angle = this.velocity.angle()
-        p1.rotate(angle).add(this.position)
-        p2.rotate(angle).add(this.position)
-        p3.rotate(angle).add(this.position)
+        const sinAngle = Math.sin(angle)
+        const cosAngle = Math.cos(angle)
+        for (let i = 0; i < path.length; i++) {
+            path[i].rotateTrig(sinAngle, cosAngle).add(this.position)
+        }
 
         cx.beginPath()
         cx.fillStyle = this.color
-        cx.moveTo(p1.x, p1.y)
-        cx.lineTo(p2.x, p2.y)
-        cx.lineTo(p3.x, p3.y)
+        cx.moveTo(path[0].x, path[0].y)
+        for (let i = 1; i < path.length; i++) {
+            cx.lineTo(path[i].x, path[i].y)
+        }
         cx.fill()
     }
 }
@@ -268,7 +278,7 @@ class BirdSimulation {
 
         const handleOther = (other) => {
             let offset = other.position.clone().subtract(bird.position)
-            const distanceSq = offset.x * offset.x + offset.y * offset.y
+            const distanceSq = offset.lengthSq()
             const biggerDistanceSq = Math.max(this.approachSq, this.repulseSq)
             const flockingMultiplier = this.individualFlocking ? bird.flockingMultiplier : 1
             if (bird === other
