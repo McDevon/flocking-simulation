@@ -9,6 +9,8 @@ import BoxGravityControls from './BoxGravityControls'
 const FlockSimulation = () => {
     const [birds, setBirds] = useState({ x: 1500 })
     const [flightSpeed, setFlightSpeed] = useState({ x: 50 })
+    const [maxSpeed, setMaxSpeed] = useState({ x: 100 })
+    const [fov, setFov] = useState({ x: 200 })
     const [approachDistance, setApproachDistance] = useState({ x: 60 })
     const [repulseDistance, setRepulseDistance] = useState({ x: 30 })
     const [approachValue, setApproachValue] = useState({ x: 0.5 })
@@ -57,6 +59,8 @@ const FlockSimulation = () => {
 
         canvasElement.current.simulation.setBirdCount(birds.x)
         canvasElement.current.simulation.setFlightSpeed(flightSpeed.x)
+        canvasElement.current.simulation.setMaxSpeed(maxSpeed.x)
+        canvasElement.current.simulation.setFov(fov.x)
         canvasElement.current.simulation.setApproachDistance(approachDistance.x)
         canvasElement.current.simulation.setRepulseDistance(repulseDistance.x)
         canvasElement.current.simulation.setApproachValue(approachValue.x)
@@ -119,8 +123,26 @@ const FlockSimulation = () => {
     }
 
     const changeFlightSpeed = () => ({ x }) => {
+        if (x > maxSpeed.x) {
+            setMaxSpeed({ x: x })
+            canvasElement.current.simulation.setMaxSpeed(x)
+        }
         setFlightSpeed({ x: x })
         canvasElement.current.simulation.setFlightSpeed(x)
+    }
+
+    const changeMaxSpeed = () => ({ x }) => {
+        if (x < flightSpeed.x) {
+            setFlightSpeed({ x: x })
+            canvasElement.current.simulation.setFlightSpeed(x)
+        }
+        setMaxSpeed({ x: x })
+        canvasElement.current.simulation.setMaxSpeed(x)
+    }
+    
+    const changeFov = () => ({ x }) => {
+        setFov({ x: x })
+        canvasElement.current.simulation.setFov(x)
     }
 
     const changeApproachValue = () => ({ x }) => {
@@ -240,12 +262,22 @@ const FlockSimulation = () => {
                     onChange={changeFlightSpeed}
                 />
                 <SimSlider
+                    label='Max speed' value={maxSpeed.x}
+                    min={0} max={200} step={1}
+                    onChange={changeMaxSpeed}
+                />
+                <SimSlider
+                    label='FOV' value={fov.x} suffix="°"
+                    min={0} max={360} step={1}
+                    onChange={changeFov}
+                />
+            </div>
+            <div style={columnStyle}>
+                <SimSlider
                     label='Approach distance' value={approachDistance.x}
                     min={0} max={200} step={1}
                     onChange={changeApproachDistance}
                 />
-            </div>
-            <div style={columnStyle}>
                 <SimSlider
                     label='Approach value' value={approachValue.x.toFixed(1)}
                     min={0} max={10} step={0.1}

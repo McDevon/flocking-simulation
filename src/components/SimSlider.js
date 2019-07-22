@@ -1,7 +1,7 @@
 import React from 'react'
 import Slider from 'react-input-slider'
 
-const SimSlider = ({ label, value, step, min, max, onChange }) => {
+const SimSlider = ({ label, value, step, min, max, onChange, suffix='' }) => {
     const divStyle = {
         marginTop: '5px',
         marginLeft: '5px',
@@ -10,7 +10,7 @@ const SimSlider = ({ label, value, step, min, max, onChange }) => {
     }
     return <div style={divStyle}>
         <div>
-            {`${label}: ${value}`}
+            {`${label}: ${value}${suffix}`}
         </div>
         <Slider
             axis="x"

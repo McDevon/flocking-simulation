@@ -341,11 +341,13 @@ class BirdSimulation {
             bird.velocity.add(offset)
         }
 
-        for (let x = spaceX - 1; x <= spaceX + 1; x++) {
-            for (let y = spaceY - 1; y <= spaceY + 1; y++) {
-                const name = `${x},${y}`
-                if (this.spaces.hasOwnProperty(name)) {
-                    this.spaces[name].forEach(handleOther)
+        if (this.fov > 0) {
+            for (let x = spaceX - 1; x <= spaceX + 1; x++) {
+                for (let y = spaceY - 1; y <= spaceY + 1; y++) {
+                    const name = `${x},${y}`
+                    if (this.spaces.hasOwnProperty(name)) {
+                        this.spaces[name].forEach(handleOther)
+                    }
                 }
             }
         }
