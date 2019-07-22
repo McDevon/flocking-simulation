@@ -44,6 +44,7 @@ class Bird {
         this.ch = canvas.height
         this.space = ''
         this.color = '#0000FF'
+        this.panicTimer = 0
     }
 
     draw(cx) {
@@ -56,7 +57,7 @@ class Bird {
         }
 
         cx.beginPath()
-        cx.fillStyle = this.color
+        cx.fillStyle = this.panicTimer > 0 ? '#FFAA00' : this.color
         cx.moveTo(path[0].x, path[0].y)
         for (let i = 1; i < path.length; i++) {
             cx.lineTo(path[i].x, path[i].y)
@@ -113,6 +114,9 @@ class BirdSimulation {
         this.setPredatorFullEffectRadius(30)
         this.setPredatorMaxRadius(150)
         this.setLinearPredator(true)
+        this.setPanicTime(4)
+        this.setPanicReduction(0.2)
+        this.setPanicAmplification(10)
 
         this.setTriggerVisualizations(false)
 
@@ -266,6 +270,18 @@ class BirdSimulation {
         this.linearPredator = value
     }
 
+    setPanicTime(value) {
+        this.panicTime = value
+    }
+
+    setPanicReduction(value) {
+        this.panicReduction = value
+    }
+
+    setPanicAmplification(value) {
+        this.panicAmplification = value
+    }
+
     setTriggerVisualizations(value) {
         this.triggerVisualizations = value
     }
@@ -275,8 +291,14 @@ class BirdSimulation {
     }
 
     flockBehaviour(bird, dt) {
-        bird.velocity.unit().multiplyByScalar(this.flightSpeed)
+        let speed = this.flightSpeed
+        if (bird.panicTimer > 0) {
+            bird.panicTimer -= dt
+            speed *= 1.5
+        }
 
+        bird.velocity.unit().multiplyByScalar(speed)
+        
         const spaceX = Math.floor(bird.position.x / this.spaceSize)
         const spaceY = Math.floor(bird.position.y / this.spaceSize)
         const spaceName = `${spaceX},${spaceY}`
@@ -323,7 +345,11 @@ class BirdSimulation {
                     }
                 }
             }
-            if (distanceSq < this.repulseSq) {
+            if (other.panicTimer > bird.panicTimer + this.panicTime * 0.5) {
+                bird.panicTimer = other.panicTimer - this.panicReduction
+            }
+            const panicAmplifier = other.panicTimer > 0 && other.panicTimer > bird.panicTimer ? this.panicAmplification : bird.panicTimer > 0 ? 0.1 : 1
+            if (distanceSq < this.repulseSq && other.panicTimer <= 0) {
                 if (this.linearRepulse) {
                     const multiplier = (this.repulseDistance - Math.sqrt(distanceSq)) / this.repulseDistance
                     offset.reverse().unit().multiplyByScalar(this.repulseValue * multiplier * flockingMultiplier)
@@ -333,9 +359,9 @@ class BirdSimulation {
             } else {
                 if (this.linearApproach) {
                     const multiplier = (approacLength - (Math.sqrt(distanceSq) - this.repulseDistance)) / (this.approachDistance - this.repulseDistance)
-                    offset = other.velocity.clone().unit().multiplyByScalar(this.approachValue * multiplier * flockingMultiplier)
+                    offset = other.velocity.clone().unit().multiplyByScalar(this.approachValue * multiplier * flockingMultiplier * panicAmplifier)
                 } else {
-                    offset = other.velocity.clone().unit().multiplyByScalar(this.approachValue * flockingMultiplier)
+                    offset = other.velocity.clone().unit().multiplyByScalar(this.approachValue * flockingMultiplier * panicAmplifier)
                 }
             }
             bird.velocity.add(offset)
@@ -405,6 +431,7 @@ class BirdSimulation {
                     const multiplier = 1 - (Math.sqrt(predatorDistanceSq) - this.predatorFullEffectRadius) / (this.predatorMaxRadius - this.predatorFullEffectRadius)
                     bird.velocity.add(new Vec2D.Vector(predatorOffsetX, predatorOffsetY).unit().multiplyByScalar(this.predatorValue * multiplier * bird.effectMultiplier))
                 }
+                bird.panicTimer = this.panicTime
             }
         }
 
