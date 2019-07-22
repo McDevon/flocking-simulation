@@ -89,6 +89,7 @@ class BirdSimulation {
         this.setMaxSpeed(100)
         this.setApproachValue(0.5)
         this.setRepulseValue(3)
+        this.setFov(270)
 
         this.setIndividualFlocking(false)
 
@@ -182,6 +183,18 @@ class BirdSimulation {
 
     setLinearRepulse(value) {
         this.linearRepulse = value
+    }
+
+    setFov(value) {
+        this.fov = value
+        const radians = value * Math.PI / 180
+        if (this.fov === 180) {
+            this.fovTestAngle = 0
+        } else {
+            this.fovTestAngle = (radians - Math.PI) / 2
+        }
+        this.fovTestSin = Math.sin(this.fovTestAngle)
+        this.fovTestCos = Math.cos(this.fovTestAngle)
     }
 
     setRedBird(value) {
@@ -298,6 +311,18 @@ class BirdSimulation {
                 || distanceSq > biggerDistanceSq) {
                 return
             }
+            if (this.fov < 360) {
+                if (this.fov === 180 && bird.velocity.dot(offset) < 0) {
+                    return
+                } else if (this.fov !== 180) {
+                    const t1 = offset.clone().rotateTrig(this.fovTestSin, this.fovTestCos)
+                    const t2 = offset.clone().rotateTrig(-this.fovTestSin, this.fovTestCos)
+                    if ((this.fov < 180 && (bird.velocity.dot(t1) < 0 || bird.velocity.dot(t2) < 0))
+                        || (this.fov > 180 && bird.velocity.dot(t1) < 0 && bird.velocity.dot(t2) < 0)) {
+                        return
+                    }
+                }
+            }
             if (distanceSq < this.repulseSq) {
                 if (this.linearRepulse) {
                     const multiplier = (this.repulseDistance - Math.sqrt(distanceSq)) / this.repulseDistance
@@ -401,11 +426,11 @@ class BirdSimulation {
         cx.fillRect(0, 0, this.width, this.height)
         cx.beginPath()
         cx.fillStyle = '#EEEEEE'
-        cx.arc(this.centerX, this.centerY, this.centerAttractFarthestRadius, 0, Math.PI * 360)
+        cx.arc(this.centerX, this.centerY, this.centerAttractFarthestRadius, 0, Math.PI * 2)
         cx.fill()
         cx.beginPath()
         cx.fillStyle = '#FFFFFF'
-        cx.arc(this.centerX, this.centerY, this.centerAttractRadius, 0, Math.PI * 360)
+        cx.arc(this.centerX, this.centerY, this.centerAttractRadius, 0, Math.PI * 2)
         cx.fill()
     }
 
@@ -432,11 +457,26 @@ class BirdSimulation {
     renderPredator(cx) {
         cx.fillStyle = '#D5AAAAAA'
         cx.beginPath()
-        cx.arc(this.predatorPosition.x, this.predatorPosition.y, this.predatorMaxRadius, 0, Math.PI * 360)
+        cx.arc(this.predatorPosition.x, this.predatorPosition.y, this.predatorMaxRadius, 0, Math.PI * 2)
         cx.fill()
         cx.fillStyle = '#DD8888AA'
         cx.beginPath()
-        cx.arc(this.predatorPosition.x, this.predatorPosition.y, this.predatorFullEffectRadius, 0, Math.PI * 360)
+        cx.arc(this.predatorPosition.x, this.predatorPosition.y, this.predatorFullEffectRadius, 0, Math.PI * 2)
+        cx.fill()
+    }
+
+    renderBirdTriggers(cx, bird) {
+        const velAngle = bird.velocity.angle()
+        const fov = this.fov / 180 * Math.PI
+        cx.fillStyle = '#88CC8888'
+        cx.beginPath()
+        cx.moveTo(bird.position.x, bird.position.y)
+        cx.arc(bird.position.x, bird.position.y, this.approachDistance, velAngle - fov / 2, velAngle + fov / 2)
+        cx.fill()
+        cx.fillStyle = '#CC888888'
+        cx.beginPath()
+        cx.moveTo(bird.position.x, bird.position.y)
+        cx.arc(bird.position.x, bird.position.y, this.repulseDistance, velAngle - fov / 2, velAngle + fov / 2)
         cx.fill()
     }
 
@@ -454,8 +494,12 @@ class BirdSimulation {
             }
         }
 
-        for (let x = this.birdCount - 1; x >= 0; x--) {
-            const bird = this.birds[x]
+        if (this.triggerVisualizations && this.redBird) {
+            this.renderBirdTriggers(cx, this.birds[0])
+        }
+
+        for (let i = this.birdCount - 1; i >= 0; i--) {
+            const bird = this.birds[i]
             bird.draw(cx)
         }
     }
