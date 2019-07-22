@@ -18,6 +18,13 @@ Vec2D.Vector.prototype.angle = function () {
     return Math.atan2(this._y, this._x)
 }
 
+Vec2D.Vector.prototype.clampSq = function (maxLength, maxLengthSq) {
+    if (this.lengthSq() > maxLengthSq) {
+        this.unit().multiplyByScalar(maxLength)
+    }
+    return this
+}
+
 CanvasRenderingContext2D.prototype.line = function (x1, y1, x2, y2) {
     this.beginPath()
     this.moveTo(x1, y1)
@@ -79,6 +86,7 @@ class BirdSimulation {
         this.setRepulseDistance(15)
 
         this.setFlightSpeed(50)
+        this.setMaxSpeed(100)
         this.setApproachValue(0.5)
         this.setRepulseValue(3)
 
@@ -153,6 +161,11 @@ class BirdSimulation {
     setFlightSpeed(value) {
         this.flightSpeed = value
         this.predatorValue = value * 1.5
+    }
+
+    setMaxSpeed(value) {
+        this.maxSpeed = value
+        this.maxSpeedSq = this.maxSpeed * this.maxSpeed
     }
 
     setApproachValue(value) {
@@ -368,11 +381,12 @@ class BirdSimulation {
             }
         }
 
+        bird.velocity.clampSq(this.maxSpeed, this.maxSpeedSq)
         bird.position.add(bird.velocity.multiplyByScalar(dt))
     }
 
     fixedUpdate(dt) {
-        for (let x = this.birdCount - 1; x >= 0; x--) {
+        for (let x = 0; x < this.birdCount; x++) {
             const bird = this.birds[x]
             this.flockBehaviour(bird, dt)
         }
