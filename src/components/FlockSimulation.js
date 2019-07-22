@@ -186,11 +186,19 @@ const FlockSimulation = () => {
     }
 
     const changeCircleGravityDiameter = () => ({ x }) => {
+        if (x > circleGravityMaxDiameter.x) {
+            setCircleGravityMaxDiameter({ x: x })
+            canvasElement.current.simulation.setCenterAttractFarthestDiameter(x)
+        }
         setCircleGravityDiameter({ x: x })
         canvasElement.current.simulation.setCenterAttractDiameter(x)
     }
 
     const changeCircleGravityMaxDiameter = () => ({ x }) => {
+        if (x < circleGravityDiameter.x) {
+            setCircleGravityDiameter({ x: x })
+            canvasElement.current.simulation.setCenterAttractDiameter(x)
+        }
         setCircleGravityMaxDiameter({ x: x })
         canvasElement.current.simulation.setCenterAttractFarthestDiameter(x)
     }
@@ -206,21 +214,37 @@ const FlockSimulation = () => {
     }
 
     const changeGravityBoxWidth = () => ({ x }) => {
+        if (x > boxMaxWidth.x) {
+            setBoxMaxWidth({ x: x })
+            canvasElement.current.simulation.setBoxAttractFarthestWidth(x)
+        }
         setBoxWidth({ x: x })
         canvasElement.current.simulation.setBoxAttractWidth(x)
     }
 
     const changeGravityBoxHeight = () => ({ x }) => {
+        if (x > boxMaxHeight.x) {
+            setBoxMaxHeight({ x: x })
+            canvasElement.current.simulation.setBoxAttractFarthestHeight(x)
+        }
         setBoxHeight({ x: x })
         canvasElement.current.simulation.setBoxAttractHeight(x)
     }
 
     const changeGravityBoxMaxWidth = () => ({ x }) => {
+        if (x < boxWidth.x) {
+            setBoxWidth({ x: x })
+            canvasElement.current.simulation.setBoxAttractWidth(x)
+        }
         setBoxMaxWidth({ x: x })
         canvasElement.current.simulation.setBoxAttractFarthestWidth(x)
     }
 
     const changeGravityBoxMaxHeight = () => ({ x }) => {
+        if (x < boxHeight.x) {
+            setBoxHeight({ x: x })
+            canvasElement.current.simulation.setBoxAttractHeight(x)
+        }
         setBoxMaxHeight({ x: x })
         canvasElement.current.simulation.setBoxAttractFarthestHeight(x)
     }
