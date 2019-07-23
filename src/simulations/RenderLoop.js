@@ -21,7 +21,7 @@ const startRender = (canvas, item) => {
         fixedDeltaCounter = 0,
         fixedCount = 0
     
-    const maxLoops = 5,
+    const maxLoops = 1,
         fixedDelta = 1.0/60
     
     canvas.simulation = item
