@@ -8,7 +8,7 @@ import BoxGravityControls from './BoxGravityControls'
 import FovDisplay from './FovDisplay'
 
 const FlockSimulation = () => {
-    const [birds, setBirds] = useState({ x: 10 })
+    const [birds, setBirds] = useState({ x: 1500 })
     const [flightSpeed, setFlightSpeed] = useState({ x: 50 })
     const [maxSpeed, setMaxSpeed] = useState({ x: 120 })
     const [fov, setFov] = useState({ x: 200 })
