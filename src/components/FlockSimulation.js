@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import startRender from '../simulations/RenderLoop'
-import birdSim from '../simulations/BirdSim'
+import birdSim from '../simulations/BirdSim/BirdSim'
 import SimSlider from './SimSlider';
 import SimSwitch from './SimSwitch';
 import CircleGravityControls from './CircleGravityControls'
