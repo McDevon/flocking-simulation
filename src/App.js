@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import FlockSimulation from './components/FlockSimulation'
+import Footer from './components/Footer'
 
 const App = props => {
   const divStyle = {
@@ -15,6 +16,7 @@ const App = props => {
   return (
     <div style={divStyle}>
       <FlockSimulation />
+      <Footer />
     </div>
   )
 }
