@@ -39,7 +39,7 @@ class Bird {
         this.position = new Vec2D.Vector(Math.random() * canvas.width, Math.random() * canvas.height)
         this.velocity = new Vec2D.Vector(-5 + Math.random() * 10, -5 + Math.random() * 10)
         this.effectMultiplier = 0.1 + Math.random() * 0.9
-        this.flockingMultiplier = 0.5 + Math.random() * 0.5
+        this.flockingMultiplier = 0.6 + Math.random() * 0.4
         this.cw = canvas.width
         this.ch = canvas.height
         this.space = ''
@@ -47,7 +47,7 @@ class Bird {
         this.panicTimer = 0
     }
 
-    draw(cx) {
+    draw(cx, showPanic = true) {
         const path = [new Vec2D.Vector(10, 0), new Vec2D.Vector(-5, 5), new Vec2D.Vector(-5, -5)]
         const angle = this.velocity.angle()
         const sinAngle = Math.sin(angle)
@@ -57,7 +57,7 @@ class Bird {
         }
 
         cx.beginPath()
-        cx.fillStyle = this.panicTimer > 0 ? '#FFAA00' : this.color
+        cx.fillStyle = showPanic && this.panicTimer > 0 ? '#FFAA00' : this.color
         cx.moveTo(path[0].x, path[0].y)
         for (let i = 1; i < path.length; i++) {
             cx.lineTo(path[i].x, path[i].y)
@@ -117,6 +117,7 @@ class BirdSimulation {
         this.setPanicTime(4)
         this.setPanicReduction(0.2)
         this.setPanicAmplification(10)
+        this.setColorPanic(false)
 
         this.setTriggerVisualizations(false)
 
@@ -272,6 +273,10 @@ class BirdSimulation {
 
     setPanicTime(value) {
         this.panicTime = value
+    }
+
+    setColorPanic(value) {
+        this.colorPanic = value
     }
 
     setPanicReduction(value) {
@@ -529,7 +534,7 @@ class BirdSimulation {
 
         for (let i = this.birdCount - 1; i >= 0; i--) {
             const bird = this.birds[i]
-            bird.draw(cx)
+            bird.draw(cx, this.colorPanic)
         }
     }
 }

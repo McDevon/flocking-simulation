@@ -7,9 +7,9 @@ import CircleGravityControls from './CircleGravityControls'
 import BoxGravityControls from './BoxGravityControls'
 
 const FlockSimulation = () => {
-    const [birds, setBirds] = useState({ x: 1500 })
+    const [birds, setBirds] = useState({ x: 10 })
     const [flightSpeed, setFlightSpeed] = useState({ x: 50 })
-    const [maxSpeed, setMaxSpeed] = useState({ x: 100 })
+    const [maxSpeed, setMaxSpeed] = useState({ x: 120 })
     const [fov, setFov] = useState({ x: 200 })
     const [approachDistance, setApproachDistance] = useState({ x: 60 })
     const [repulseDistance, setRepulseDistance] = useState({ x: 30 })
@@ -28,9 +28,11 @@ const FlockSimulation = () => {
     const [boxMaxHeight, setBoxMaxHeight] = useState({ x: 100 })
     const [boxGravityValue, setBoxGravityValue] = useState({ x: 1 })
     const [triggers, setTriggers] = useState(0)
+    const [colorPanic, setColorPanic] = useState(0)
     const [individualFlocking, setIndividualFlocking] = useState(0)
-    const [predatorRadius, setPredatorRadius] = useState({ x: 30 })
+    const [predatorRadius, setPredatorRadius] = useState({ x: 90 })
     const [predatorMaxRadius, setPredatorMaxRadius] = useState({ x: 150 })
+    const [panicTime, setPanicTime] = useState({ x: 4 })
 
     const canvasElement = useRef(null)
 
@@ -79,6 +81,8 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setBoxAttractValue(boxGravityValue.x)
         canvasElement.current.simulation.setTriggerVisualizations(triggers)
         canvasElement.current.simulation.setIndividualFlocking(individualFlocking)
+        canvasElement.current.simulation.setPanicTime(panicTime.x)
+        canvasElement.current.simulation.setColorPanic(colorPanic)
 
         window.addEventListener("mousedown", (event) => {
             const rect = canvasElement.current.getBoundingClientRect()
@@ -139,7 +143,7 @@ const FlockSimulation = () => {
         setMaxSpeed({ x: x })
         canvasElement.current.simulation.setMaxSpeed(x)
     }
-    
+
     const changeFov = () => ({ x }) => {
         setFov({ x: x })
         canvasElement.current.simulation.setFov(x)
@@ -254,6 +258,11 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setTriggerVisualizations(x)
     }
 
+    const changeColorPanic = () => (x) => {
+        setColorPanic(x)
+        canvasElement.current.simulation.setColorPanic(x)
+    }
+
     const changeIndividualFlocking = () => (x) => {
         setIndividualFlocking(x)
         canvasElement.current.simulation.setIndividualFlocking(x)
@@ -267,6 +276,11 @@ const FlockSimulation = () => {
     const changePredatorMaxRadius = () => ({ x }) => {
         setPredatorMaxRadius({ x: x })
         canvasElement.current.simulation.setPredatorMaxRadius(x)
+    }
+
+    const changePanicTime = () => ({ x }) => {
+        setPanicTime({ x: x })
+        canvasElement.current.simulation.setPanicTime(x)
     }
 
     useEffect(startHook, [])
@@ -377,6 +391,15 @@ const FlockSimulation = () => {
                     label='Max Radius' value={predatorMaxRadius.x}
                     min={0} max={500} step={5}
                     onChange={changePredatorMaxRadius}
+                />
+                <SimSlider
+                    label='Panic Time' value={panicTime.x.toFixed(1)}
+                    min={0} max={20} step={0.1}
+                    onChange={changePanicTime}
+                />
+                <SimSwitch
+                    label='Color panic' value={colorPanic}
+                    onChange={changeColorPanic}
                 />
             </div>
         </div>
