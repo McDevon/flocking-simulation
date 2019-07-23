@@ -5,6 +5,7 @@ import SimSlider from './SimSlider';
 import SimSwitch from './SimSwitch';
 import CircleGravityControls from './CircleGravityControls'
 import BoxGravityControls from './BoxGravityControls'
+import FovDisplay from './FovDisplay'
 
 const FlockSimulation = () => {
     const [birds, setBirds] = useState({ x: 10 })
@@ -331,6 +332,13 @@ const FlockSimulation = () => {
                     label='Repulse value' value={repulseValue.x.toFixed(1)}
                     min={0} max={10} step={0.1}
                     onChange={changeRepulseValue}
+                />
+            </div>
+            <div style={columnStyle}>
+                <FovDisplay 
+                    fov={fov.x}
+                    approachDistance={approachDistance.x}
+                    repulseDistance={repulseDistance.x}
                 />
             </div>
             <div style={columnStyle}>
