@@ -85,6 +85,7 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setColorPanic(colorPanic)
 
         window.addEventListener("mousedown", (event) => {
+            event.preventDefault()
             const rect = canvasElement.current.getBoundingClientRect()
             if (event.clientX < rect.left || event.clientY < rect.top
                 || event.clientX > rect.right || event.clientY > rect.bottom) {
