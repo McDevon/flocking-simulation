@@ -19,6 +19,24 @@ class SpatialHash {
         this.clear()
     }
 
+    createSpace(spaceX, spaceY, spaceName) {
+        const newSpace = []
+        newSpace.neighbors = []
+        this.spaces[spaceName] = newSpace
+        for (let x = spaceX - 1; x <= spaceX + 1; x++) {
+            for (let y = spaceY - 1; y <= spaceY + 1; y++) {
+                const name = `${x},${y}`
+                if (this.spaces.hasOwnProperty(name)) {
+                    const space = this.spaces[name]
+                    space.neighbors.push(newSpace)
+                    if (space !== newSpace) {
+                        newSpace.neighbors.push(space)
+                    }
+                }
+            }
+        }
+    }
+
     registerPosition(item, position) {
         const spaceX = Math.floor(position.x / this.spaceSize)
         const spaceY = Math.floor(position.y / this.spaceSize)
@@ -36,7 +54,7 @@ class SpatialHash {
             }
             item.__space = spaceName
             if (!this.spaces.hasOwnProperty(spaceName)) {
-                this.spaces[spaceName] = []
+                this.createSpace(spaceX, spaceY, spaceName)
             }
             if (!this.spaces[spaceName].includes(item)) {
                 this.spaces[spaceName].push(item)
@@ -47,18 +65,22 @@ class SpatialHash {
     itemsFromAdjacentSpaces(position) {
         const spaceX = Math.floor(position.x / this.spaceSize)
         const spaceY = Math.floor(position.y / this.spaceSize)
-        
+        const spaceName = `${spaceX},${spaceY}`
+
+        if (!this.spaces.hasOwnProperty(spaceName)) {
+            return []
+        }
+
+        const space = this.spaces[spaceName]
         const items = []
 
-        for (let x = spaceX - 1; x <= spaceX + 1; x++) {
-            for (let y = spaceY - 1; y <= spaceY + 1; y++) {
-                const name = `${x},${y}`
-                if (this.spaces.hasOwnProperty(name)) {
-                    const arr = this.spaces[name]
-                    for (var i = 0, len = arr.length; i < len; ++i) {
-                        items.push(arr[i]);
-                    }
-                }
+        /*for (let x = 0, xlen = space.length; x < xlen; x++) {
+            items.push(space[x])
+        }*/
+        for (let i = 0, len = space.neighbors.length; i < len; i++) {
+            const neighbor = space.neighbors[i]
+            for (let k = 0, klen = neighbor.length; k < klen; k++) {
+                items.push(neighbor[k])
             }
         }
 
