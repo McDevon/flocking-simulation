@@ -1,6 +1,7 @@
 import * as Vec2D from 'vector2d'
 import '../../extensions/CanvasExt'
 import Bird from './Bird'
+import SpatialHash from '../SpatialHash'
 
 class BirdSimulation {
 
@@ -16,7 +17,7 @@ class BirdSimulation {
             this.birds.push(bird)
         }
 
-        this.spaces = {}
+        this.spaces = new SpatialHash(10)
 
         this.setBirdCount(100)
         this.setApproachDistance(30)
@@ -61,21 +62,13 @@ class BirdSimulation {
         this.centerY = canvas.height * 0.5
     }
 
-    clearSpaces() {
-        for (let spaceName in this.spaces) {
-            if (this.spaces.hasOwnProperty(spaceName)) {
-                this.spaces[spaceName].length = 0
-            }
-        }
-    }
-
     setBirdCount(count) {
         this.birdCount = count
         if (this.birdCount === this.previousBirdCount) {
             return
         }
         if (this.birdCount < this.previousBirdCount) {
-            this.clearSpaces()
+            this.spaces.clear()
         }
         this.previousBirdCount = this.birdCount
     }
@@ -85,8 +78,7 @@ class BirdSimulation {
         this.approachSq = this.approachDistance * this.approachDistance
         let biggerDistance = Math.max(this.approachDistance, this.repulseDistance)
         if (this.spaceSize !== biggerDistance) {
-            this.spaceSize = biggerDistance
-            this.clearSpaces()
+            this.spaces.resize(biggerDistance)
         }
     }
 
@@ -95,8 +87,7 @@ class BirdSimulation {
         this.repulseSq = this.repulseDistance * this.repulseDistance
         let biggerDistance = Math.max(this.approachDistance, this.repulseDistance)
         if (this.spaceSize !== biggerDistance) {
-            this.spaceSize = biggerDistance
-            this.clearSpaces()
+            this.spaces.resize(biggerDistance)
         }
     }
 
@@ -240,28 +231,7 @@ class BirdSimulation {
 
         bird.velocity.unit().multiplyByScalar(speed)
         
-        const spaceX = Math.floor(bird.position.x / this.spaceSize)
-        const spaceY = Math.floor(bird.position.y / this.spaceSize)
-        const spaceName = `${spaceX},${spaceY}`
-
-        if (bird.space !== spaceName) {
-            if (this.spaces.hasOwnProperty(bird.space)) {
-                const space = this.spaces[bird.space]
-                for (var i = 0; i < space.length; i++) {
-                    if (space[i] === bird) {
-                        space.splice(i, 1);
-                        break
-                    }
-                }
-            }
-            bird.space = spaceName
-            if (!this.spaces.hasOwnProperty(spaceName)) {
-                this.spaces[spaceName] = []
-            }
-            if (!this.spaces[spaceName].includes(bird)) {
-                this.spaces[spaceName].push(bird)
-            }
-        }
+        this.spaces.registerPosition(bird, bird.position)
 
         const approacLength = this.approachDistance - this.repulseDistance
 
@@ -309,14 +279,7 @@ class BirdSimulation {
         }
 
         if (this.fov > 0) {
-            for (let x = spaceX - 1; x <= spaceX + 1; x++) {
-                for (let y = spaceY - 1; y <= spaceY + 1; y++) {
-                    const name = `${x},${y}`
-                    if (this.spaces.hasOwnProperty(name)) {
-                        this.spaces[name].forEach(handleOther)
-                    }
-                }
-            }
+            const others = this.spaces.itemsFromAdjacentSpaces(bird.position).forEach(handleOther)
         }
         /*for (let i = 0; i < this.birdCount; i++) {
             const other = this.birds[i]
@@ -381,8 +344,8 @@ class BirdSimulation {
     }
 
     fixedUpdate(dt) {
-        for (let x = 0; x < this.birdCount; x++) {
-            const bird = this.birds[x]
+        for (let i = 0; i < this.birdCount; i++) {
+            const bird = this.birds[i]
             this.flockBehaviour(bird, dt)
         }
     }
