@@ -93,7 +93,7 @@ class BirdSimulation {
 
     setFlightSpeed(value) {
         this.flightSpeed = value
-        this.predatorValue = value * 1.5
+        this.predatorValue = value * 2.5
     }
 
     setMaxSpeed(value) {

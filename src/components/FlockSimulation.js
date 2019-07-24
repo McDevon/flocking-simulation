@@ -82,6 +82,8 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setBoxAttractValue(boxGravityValue.x)
         canvasElement.current.simulation.setTriggerVisualizations(triggers)
         canvasElement.current.simulation.setIndividualFlocking(individualFlocking)
+        canvasElement.current.simulation.setPredatorFullEffectRadius(predatorRadius.x)
+        canvasElement.current.simulation.setPredatorMaxRadius(predatorMaxRadius.x)
         canvasElement.current.simulation.setPanicTime(panicTime.x)
         canvasElement.current.simulation.setColorPanic(colorPanic)
 
@@ -288,7 +290,7 @@ const FlockSimulation = () => {
     useEffect(startHook, [])
 
     return <div>
-        <canvas style={canvasStyle} ref={canvasElement} width="900" height="500" />
+        <canvas style={canvasStyle} ref={canvasElement} width="900" height="600" />
         <div style={controlAreaStyle}>
             <div style={columnStyle}>
                 <SimSlider
