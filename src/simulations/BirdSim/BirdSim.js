@@ -279,12 +279,8 @@ class BirdSimulation {
         }
 
         if (this.fov > 0) {
-            const others = this.spaces.itemsFromAdjacentSpaces(bird.position).forEach(handleOther)
+            this.spaces.itemsFromAdjacentSpaces(bird.position).forEach(handleOther)
         }
-        /*for (let i = 0; i < this.birdCount; i++) {
-            const other = this.birds[i]
-            handleOther(other)
-        }*/
 
         if (this.circleCenterMode) {
             const centerOffsetX = this.centerX - bird.position.x

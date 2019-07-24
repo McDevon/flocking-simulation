@@ -74,9 +74,6 @@ class SpatialHash {
         const space = this.spaces[spaceName]
         const items = []
 
-        /*for (let x = 0, xlen = space.length; x < xlen; x++) {
-            items.push(space[x])
-        }*/
         for (let i = 0, len = space.neighbors.length; i < len; i++) {
             const neighbor = space.neighbors[i]
             for (let k = 0, klen = neighbor.length; k < klen; k++) {
