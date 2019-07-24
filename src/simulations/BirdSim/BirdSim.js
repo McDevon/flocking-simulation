@@ -230,7 +230,7 @@ class BirdSimulation {
         }
 
         bird.velocity.unit().multiplyByScalar(speed)
-        
+
         this.spaces.registerPosition(bird, bird.position)
 
         const approacLength = this.approachDistance - this.repulseDistance
@@ -292,7 +292,7 @@ class BirdSimulation {
                     const multiplier = (Math.sqrt(centerDistanceSq) - this.centerAttractRadius) / (this.centerAttractFarthestRadius - this.centerAttractRadius)
                     bird.velocity.add(new Vec2D.Vector(centerOffsetX, centerOffsetY).unit().multiplyByScalar(this.centerAttractValue * multiplier * bird.effectMultiplier))
                 } else {
-                    bird.velocity.add(new Vec2D.Vector(centerOffsetX, centerOffsetY).unit().multiplyByScalar(this.centerAttractValue * bird.effectMultiplier))               
+                    bird.velocity.add(new Vec2D.Vector(centerOffsetX, centerOffsetY).unit().multiplyByScalar(this.centerAttractValue * bird.effectMultiplier))
                 }
             }
         } else {
@@ -397,11 +397,13 @@ class BirdSimulation {
     renderBirdTriggers(cx, bird) {
         const velAngle = bird.velocity.angle()
         const fov = this.fov / 180 * Math.PI
-        cx.fillStyle = '#88CC8888'
-        cx.beginPath()
-        cx.moveTo(bird.position.x, bird.position.y)
-        cx.arc(bird.position.x, bird.position.y, this.approachDistance, velAngle - fov / 2, velAngle + fov / 2)
-        cx.fill()
+        if (this.repulseDistance < this.approachDistance) {
+            cx.fillStyle = '#88CC8888'
+            cx.beginPath()
+            cx.moveTo(bird.position.x, bird.position.y)
+            cx.arc(bird.position.x, bird.position.y, this.approachDistance, velAngle - fov / 2, velAngle + fov / 2)
+            cx.fill()
+        }
         cx.fillStyle = '#CC888888'
         cx.beginPath()
         cx.moveTo(bird.position.x, bird.position.y)
@@ -416,7 +418,7 @@ class BirdSimulation {
             if (this.circleCenterMode) {
                 this.renderCircleAttractMode(cx)
             } else {
-                this.renderBoxAttractMode(cx)   
+                this.renderBoxAttractMode(cx)
             }
             if (this.predator) {
                 this.renderPredator(cx)

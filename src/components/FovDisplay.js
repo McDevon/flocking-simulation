@@ -24,11 +24,13 @@ const FovDisplay = ({ fov, approachDistance, repulseDistance }) => {
         const centerY = canvas.height * 0.5
         const birdAngle = Math.PI * -0.5
         const fovRad = fov / 180 * Math.PI
-        context.fillStyle = '#88CC8888'
-        context.beginPath()
-        context.moveTo(centerX, centerY)
-        context.arc(centerX, centerY, approachDistance, birdAngle - fovRad / 2, birdAngle + fovRad / 2)
-        context.fill()
+        if (repulseDistance < approachDistance) {
+            context.fillStyle = '#88CC8888'
+            context.beginPath()
+            context.moveTo(centerX, centerY)
+            context.arc(centerX, centerY, approachDistance, birdAngle - fovRad / 2, birdAngle + fovRad / 2)
+            context.fill()
+        }
         context.fillStyle = '#CC888888'
         context.beginPath()
         context.moveTo(centerX, centerY)
