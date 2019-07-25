@@ -8,16 +8,18 @@ import BoxGravityControls from './BoxGravityControls'
 import FovDisplay from './FovDisplay'
 
 const FlockSimulation = () => {
-    const [birds, setBirds] = useState({ x: 1500 })
-    const [flightSpeed, setFlightSpeed] = useState({ x: 50 })
-    const [maxSpeed, setMaxSpeed] = useState({ x: 120 })
-    const [fov, setFov] = useState({ x: 200 })
-    const [approachDistance, setApproachDistance] = useState({ x: 60 })
-    const [repulseDistance, setRepulseDistance] = useState({ x: 30 })
-    const [approachValue, setApproachValue] = useState({ x: 0.5 })
-    const [repulseValue, setRepulseValue] = useState({ x: 3 })
-    const [linearApproach, setLinearApproach] = useState(0)
-    const [linearRepulse, setLinearRepulse] = useState(1)
+    const [birdSetup, setBirdSetup] = useState({
+        count: 1500,
+        speed: 50,
+        maxSpeed: 120,
+        fov: 200,
+        repulseDistance: 30,
+        approachDistance: 60,
+        repulseValue: 3,
+        approachValue: 0.5,
+        linearRepulse: 1,
+        linearApproach: 0
+    })
     const [redBird, setRedBird] = useState(1)
     const [circleAttractMode, setCircleAttractMode] = useState(0)
     const [circleGravityDiameter, setCircleGravityDiameter] = useState({ x: 200 })
@@ -62,16 +64,11 @@ const FlockSimulation = () => {
 
         startRender(canvasElement.current, birdSim())
 
-        canvasElement.current.simulation.setBirdCount(birds.x)
-        canvasElement.current.simulation.setFlightSpeed(flightSpeed.x)
-        canvasElement.current.simulation.setMaxSpeed(maxSpeed.x)
-        canvasElement.current.simulation.setFov(fov.x)
-        canvasElement.current.simulation.setApproachDistance(approachDistance.x)
-        canvasElement.current.simulation.setRepulseDistance(repulseDistance.x)
-        canvasElement.current.simulation.setApproachValue(approachValue.x)
-        canvasElement.current.simulation.setRepulseValue(repulseValue.x)
-        canvasElement.current.simulation.setLinearApproach(linearApproach)
-        canvasElement.current.simulation.setLinearRepulse(linearRepulse)
+        canvasElement.current.simulation.setBirdSetup(
+            birdSetup.count, birdSetup.speed, birdSetup.maxSpeed, birdSetup.fov,
+            birdSetup.repulseDistance, birdSetup.approachDistance, birdSetup.repulseValue,
+            birdSetup.approachValue, birdSetup.linearRepulse, birdSetup.linearApproach
+        )
         canvasElement.current.simulation.setRedBird(redBird)
         canvasElement.current.simulation.setCircleAttractMode(circleAttractMode)
         canvasElement.current.simulation.setCenterAttractDiameter(circleGravityDiameter.x)
@@ -124,62 +121,26 @@ const FlockSimulation = () => {
         }
     }
 
-    const changeBirds = () => ({ x }) => {
-        setBirds({ x: x })
-        canvasElement.current.simulation.setBirdCount(x)
-    }
+    const changeBirdSetup = ({ count, speed, maxSpeed, fov, repulseDistance,
+        approachDistance, repulseValue, approachValue, linearRepulse, linearApproach }) => {
 
-    const changeFlightSpeed = () => ({ x }) => {
-        if (x > maxSpeed.x) {
-            setMaxSpeed({ x: x })
-            canvasElement.current.simulation.setMaxSpeed(x)
-        }
-        setFlightSpeed({ x: x })
-        canvasElement.current.simulation.setFlightSpeed(x)
-    }
+        const newSpeed = speed > maxSpeed && speed === birdSetup.speed ? maxSpeed : speed
+        const newMaxSpeed = speed > maxSpeed && maxSpeed === birdSetup.maxSpeed ? speed : maxSpeed
 
-    const changeMaxSpeed = () => ({ x }) => {
-        if (x < flightSpeed.x) {
-            setFlightSpeed({ x: x })
-            canvasElement.current.simulation.setFlightSpeed(x)
-        }
-        setMaxSpeed({ x: x })
-        canvasElement.current.simulation.setMaxSpeed(x)
-    }
-
-    const changeFov = () => ({ x }) => {
-        setFov({ x: x })
-        canvasElement.current.simulation.setFov(x)
-    }
-
-    const changeApproachValue = () => ({ x }) => {
-        setApproachValue({ x: x })
-        canvasElement.current.simulation.setApproachValue(x)
-    }
-
-    const changeApproachDistance = () => ({ x }) => {
-        setApproachDistance({ x: x })
-        canvasElement.current.simulation.setApproachDistance(x)
-    }
-
-    const changeRepulseValue = () => ({ x }) => {
-        setRepulseValue({ x: x })
-        canvasElement.current.simulation.setRepulseValue(x)
-    }
-
-    const changeRepulseDistance = () => ({ x }) => {
-        setRepulseDistance({ x: x })
-        canvasElement.current.simulation.setRepulseDistance(x)
-    }
-
-    const changeLinearApproach = () => (x) => {
-        setLinearApproach(x)
-        canvasElement.current.simulation.setLinearApproach(x)
-    }
-
-    const changeLinearRepulse = () => (x) => {
-        setLinearRepulse(x)
-        canvasElement.current.simulation.setLinearRepulse(x)
+        setBirdSetup({
+            count: count,
+            speed: newSpeed,
+            maxSpeed: newMaxSpeed,
+            fov: fov,
+            repulseDistance: repulseDistance,
+            approachDistance: approachDistance,
+            repulseValue: repulseValue,
+            approachValue: approachValue,
+            linearRepulse: linearRepulse,
+            linearApproach: linearApproach
+        })
+        canvasElement.current.simulation.setBirdSetup(count, newSpeed, newMaxSpeed, fov, repulseDistance,
+            approachDistance, repulseValue, approachValue, linearRepulse, linearApproach)
     }
 
     const changeRedBird = () => (x) => {
@@ -265,7 +226,7 @@ const FlockSimulation = () => {
         setIndividualFlocking(x)
         canvasElement.current.simulation.setIndividualFlocking(x)
     }
-    
+
     const changePredator = ({ radius1, radius2, colorPanic, panicTime }) => {
         const newRadius1 = radius1 > radius2 && radius1 === predator.radius1 ? radius2 : radius1
         const newRadius2 = radius1 > radius2 && radius2 === predator.radius2 ? radius1 : radius2
@@ -273,7 +234,8 @@ const FlockSimulation = () => {
             radius1: newRadius1,
             radius2: newRadius2,
             colorPanic: colorPanic,
-            panicTime: panicTime })
+            panicTime: panicTime
+        })
         canvasElement.current.simulation.setPredatorSetup(newRadius1, newRadius2, colorPanic, panicTime)
     }
 
@@ -284,63 +246,63 @@ const FlockSimulation = () => {
         <div style={controlAreaStyle}>
             <div style={columnStyle}>
                 <SimSlider
-                    label='Birds' value={birds.x}
+                    label='Birds' value={birdSetup.count}
                     min={10} max={2500} step={10}
-                    onChange={changeBirds}
+                    onChange={() => ({ x }) => { changeBirdSetup({ ...birdSetup, count: x }) }}
                 />
                 <SimSlider
-                    label='Bird speed' value={flightSpeed.x}
+                    label='Bird speed' value={birdSetup.speed}
                     min={0} max={200} step={1}
-                    onChange={changeFlightSpeed}
+                    onChange={() => ({ x }) => { changeBirdSetup({ ...birdSetup, speed: x }) }}
                 />
                 <SimSlider
-                    label='Max speed' value={maxSpeed.x}
+                    label='Max speed' value={birdSetup.maxSpeed}
                     min={0} max={200} step={1}
-                    onChange={changeMaxSpeed}
+                    onChange={() => ({ x }) => { changeBirdSetup({ ...birdSetup, maxSpeed: x }) }}
                 />
                 <SimSlider
-                    label='FOV' value={fov.x} suffix="°"
+                    label='FOV' value={birdSetup.fov} suffix="°"
                     min={0} max={360} step={1}
-                    onChange={changeFov}
+                    onChange={() => ({ x }) => { changeBirdSetup({ ...birdSetup, fov: x }) }}
                 />
             </div>
             <div style={columnStyle}>
                 <SimSlider
-                    label='Approach distance' value={approachDistance.x}
+                    label='Approach distance' value={birdSetup.approachDistance}
                     min={0} max={200} step={1}
-                    onChange={changeApproachDistance}
+                    onChange={() => ({ x }) => { changeBirdSetup({ ...birdSetup, approachDistance: x }) }}
                 />
                 <SimSlider
-                    label='Approach value' value={approachValue.x.toFixed(1)}
+                    label='Approach value' value={birdSetup.approachValue.toFixed(1)}
                     min={0} max={10} step={0.1}
-                    onChange={changeApproachValue}
+                    onChange={() => ({ x }) => { changeBirdSetup({ ...birdSetup, approachValue: x }) }}
                 />
                 <SimSlider
-                    label='Repulse distance' value={repulseDistance.x}
+                    label='Repulse distance' value={birdSetup.repulseDistance}
                     min={0} max={200} step={1}
-                    onChange={changeRepulseDistance}
+                    onChange={() => ({ x }) => { changeBirdSetup({ ...birdSetup, repulseDistance: x }) }}
                 />
                 <SimSlider
-                    label='Repulse value' value={repulseValue.x.toFixed(1)}
+                    label='Repulse value' value={birdSetup.repulseValue.toFixed(1)}
                     min={0} max={10} step={0.1}
-                    onChange={changeRepulseValue}
+                    onChange={() => ({ x }) => { changeBirdSetup({ ...birdSetup, repulseValue: x }) }}
                 />
             </div>
             <div style={columnStyle}>
-                <FovDisplay 
-                    fov={fov.x}
-                    approachDistance={approachDistance.x}
-                    repulseDistance={repulseDistance.x}
+                <FovDisplay
+                    fov={birdSetup.fov}
+                    approachDistance={birdSetup.approachDistance}
+                    repulseDistance={birdSetup.repulseDistance}
                 />
             </div>
             <div style={columnStyle}>
                 <SimSwitch
-                    label='Linear approach' value={linearApproach}
-                    onChange={changeLinearApproach}
+                    label='Linear approach' value={birdSetup.linearApproach}
+                    onChange={() => (x) => { changeBirdSetup({ ...birdSetup, linearApproach: x }) }}
                 />
                 <SimSwitch
-                    label='Linear repulse' value={linearRepulse}
-                    onChange={changeLinearRepulse}
+                    label='Linear repulse' value={birdSetup.linearRepulse}
+                    onChange={() => (x) => { changeBirdSetup({ ...birdSetup, linearRepulse: x }) }}
                 />
                 <SimSwitch
                     label='Flocking variance' value={individualFlocking}
@@ -386,21 +348,21 @@ const FlockSimulation = () => {
                 <SimSlider
                     label='Min Radius' value={predator.radius1}
                     min={0} max={500} step={5}
-                    onChange={() => ({x}) => { changePredator({...predator, radius1: x}) }}
+                    onChange={() => ({ x }) => { changePredator({ ...predator, radius1: x }) }}
                 />
                 <SimSlider
                     label='Max Radius' value={predator.radius2}
                     min={0} max={500} step={5}
-                    onChange={() => ({x}) => { changePredator({...predator, radius2: x}) }}
+                    onChange={() => ({ x }) => { changePredator({ ...predator, radius2: x }) }}
                 />
                 <SimSlider
                     label='Panic Time' value={predator.panicTime.toFixed(1)}
                     min={0} max={20} step={0.1}
-                    onChange={() => ({x}) => { changePredator({...predator, panicTime: x}) }}
+                    onChange={() => ({ x }) => { changePredator({ ...predator, panicTime: x }) }}
                 />
                 <SimSwitch
                     label='Color panic' value={predator.colorPanic}
-                    onChange={() => (x) => { changePredator({...predator, colorPanic: x}) }}
+                    onChange={() => (x) => { changePredator({ ...predator, colorPanic: x }) }}
                 />
             </div>
         </div>
