@@ -75,12 +75,12 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setTriggerVisualizations(visuals.triggers)
 
         window.addEventListener("mousedown", (event) => {
-            event.preventDefault()
             const rect = canvasElement.current.getBoundingClientRect()
             if (event.clientX < rect.left || event.clientY < rect.top
                 || event.clientX > rect.right || event.clientY > rect.bottom) {
                 return
             }
+            event.preventDefault()
             canvasElement.current.simulation.setPredator(true)
         })
 
@@ -162,7 +162,7 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setupAttraction(newSetup)
     }
 
-    const changeVisuals = ({triggers, redBird}) => {
+    const changeVisuals = ({ triggers, redBird }) => {
         setVisuals({
             triggers: triggers,
             redBird: redBird
