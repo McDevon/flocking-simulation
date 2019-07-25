@@ -18,26 +18,28 @@ const FlockSimulation = () => {
         repulseValue: 3,
         approachValue: 0.5,
         linearRepulse: 1,
-        linearApproach: 0
+        linearApproach: 0,
+        individualFlocking: 0
     })
-    const [circleAttractMode, setCircleAttractMode] = useState(0)
-    const [circleGravityDiameter, setCircleGravityDiameter] = useState({ x: 200 })
-    const [circleGravityMaxDiameter, setCircleGravityMaxDiameter] = useState({ x: 400 })
-    const [circleGravityValue, setCircleGravityValue] = useState({ x: 1 })
-    const [boxWidth, setBoxWidth] = useState({ x: 500 })
-    const [boxHeight, setBoxHeight] = useState({ x: 50 })
-    const [boxMaxWidth, setBoxMaxWidth] = useState({ x: 700 })
-    const [boxMaxHeight, setBoxMaxHeight] = useState({ x: 100 })
-    const [boxGravityValue, setBoxGravityValue] = useState({ x: 1 })
-    const [triggers, setTriggers] = useState(0)
-    const [redBird, setRedBird] = useState(1)
-    const [individualFlocking, setIndividualFlocking] = useState(0)
+    const [attractSetup, setAttractSetup] = useState({
+        circleMode: 0,
+        circleDiameter1: 200,
+        circleDiameter2: 400,
+        circleValue: 1,
+        boxWidth1: 500,
+        boxWidth2: 700,
+        boxHeight1: 50,
+        boxHeight2: 100,
+        boxValue: 1
+    })
     const [predator, setPredator] = useState({
         radius1: 110,
         radius2: 150,
         colorPanic: 0,
         panicTime: 4
     })
+    const [triggers, setTriggers] = useState(0)
+    const [redBird, setRedBird] = useState(1)
 
     const canvasElement = useRef(null)
 
@@ -65,19 +67,10 @@ const FlockSimulation = () => {
         startRender(canvasElement.current, birdSim())
 
         canvasElement.current.simulation.setupBirds(birdSetup)
+        canvasElement.current.simulation.setupAttraction(attractSetup)
         canvasElement.current.simulation.setRedBird(redBird)
-        canvasElement.current.simulation.setCircleAttractMode(circleAttractMode)
-        canvasElement.current.simulation.setCenterAttractDiameter(circleGravityDiameter.x)
-        canvasElement.current.simulation.setCenterAttractFarthestDiameter(circleGravityMaxDiameter.x)
-        canvasElement.current.simulation.setCenterAttractValue(circleGravityValue.x)
-        canvasElement.current.simulation.setBoxAttractWidth(boxWidth.x)
-        canvasElement.current.simulation.setBoxAttractHeight(boxHeight.x)
-        canvasElement.current.simulation.setBoxAttractFarthestWidth(boxMaxWidth.x)
-        canvasElement.current.simulation.setBoxAttractFarthestHeight(boxMaxHeight.x)
-        canvasElement.current.simulation.setBoxAttractValue(boxGravityValue.x)
         canvasElement.current.simulation.setTriggerVisualizations(triggers)
-        canvasElement.current.simulation.setIndividualFlocking(individualFlocking)
-        canvasElement.current.simulation.setPredatorSetup(predator.radius1, predator.radius2, predator.colorPanic, predator.panicTime)
+        canvasElement.current.simulation.setupPredator(predator)
 
         window.addEventListener("mousedown", (event) => {
             event.preventDefault()
@@ -118,12 +111,13 @@ const FlockSimulation = () => {
     }
 
     const changeBirdSetup = ({ count, speed, maxSpeed, fov, repulseDistance,
-        approachDistance, repulseValue, approachValue, linearRepulse, linearApproach }) => {
+        approachDistance, repulseValue, approachValue, linearRepulse, linearApproach,
+        individualFlocking }) => {
 
         const newSpeed = speed > maxSpeed && speed === birdSetup.speed ? maxSpeed : speed
         const newMaxSpeed = speed > maxSpeed && maxSpeed === birdSetup.maxSpeed ? speed : maxSpeed
 
-        setBirdSetup({
+        const newSetup = {
             count: count,
             speed: newSpeed,
             maxSpeed: newMaxSpeed,
@@ -133,14 +127,37 @@ const FlockSimulation = () => {
             repulseValue: repulseValue,
             approachValue: approachValue,
             linearRepulse: linearRepulse,
-            linearApproach: linearApproach
-        })
-        canvasElement.current.simulation.setupBirds({
-            count: count, speed: newSpeed, maxSpeed: newMaxSpeed,
-            fov: fov, repulseDistance: repulseDistance, approachDistance: approachDistance,
-            repulseValue: repulseValue, approachValue: approachValue, linearRepulse: linearRepulse,
-            linearApproach: linearApproach
-        })
+            linearApproach: linearApproach,
+            individualFlocking: individualFlocking
+        }
+        setBirdSetup(newSetup)
+        canvasElement.current.simulation.setupBirds(newSetup)
+    }
+
+    const changeAttractSetup = ({ circleMode, circleDiameter1, circleDiameter2,
+        circleValue, boxWidth1, boxWidth2, boxHeight1, boxHeight2, boxValue
+    }) => {
+
+        const newDiameter1 = circleDiameter1 > circleDiameter2 && attractSetup.circleDiameter1 === circleDiameter1 ? circleDiameter2 : circleDiameter1
+        const newDiameter2 = circleDiameter1 > circleDiameter2 && attractSetup.circleDiameter2 === circleDiameter2 ? circleDiameter1 : circleDiameter2
+        const newWidth1 = boxWidth1 > boxWidth2 && attractSetup.boxWidth1 === boxWidth1 ? boxWidth2 : boxWidth1
+        const newWidth2 = boxWidth1 > boxWidth2 && attractSetup.boxWidth2 === boxWidth2 ? boxWidth1 : boxWidth2
+        const newHeight1 = boxHeight1 > boxHeight2 && attractSetup.boxHeight1 === boxHeight1 ? boxHeight2 : boxHeight1
+        const newHeight2 = boxHeight1 > boxHeight2 && attractSetup.boxHeight2 === boxHeight2 ? boxHeight1 : boxHeight2
+
+        const newSetup = {
+            circleMode: circleMode,
+            circleDiameter1: newDiameter1,
+            circleDiameter2: newDiameter2,
+            circleValue: circleValue,
+            boxWidth1: newWidth1,
+            boxWidth2: newWidth2,
+            boxHeight1: newHeight1,
+            boxHeight2: newHeight2,
+            boxValue: boxValue
+        }
+        setAttractSetup(newSetup)
+        canvasElement.current.simulation.setupAttraction(newSetup)
     }
 
     const changeRedBird = () => (x) => {
@@ -148,95 +165,22 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setRedBird(x)
     }
 
-    const changeCircleAttractMode = () => (x) => {
-        setCircleAttractMode(x)
-        canvasElement.current.simulation.setCircleAttractMode(x)
-    }
-
-    const changeCircleGravityDiameter = () => ({ x }) => {
-        if (x > circleGravityMaxDiameter.x) {
-            setCircleGravityMaxDiameter({ x: x })
-            canvasElement.current.simulation.setCenterAttractFarthestDiameter(x)
-        }
-        setCircleGravityDiameter({ x: x })
-        canvasElement.current.simulation.setCenterAttractDiameter(x)
-    }
-
-    const changeCircleGravityMaxDiameter = () => ({ x }) => {
-        if (x < circleGravityDiameter.x) {
-            setCircleGravityDiameter({ x: x })
-            canvasElement.current.simulation.setCenterAttractDiameter(x)
-        }
-        setCircleGravityMaxDiameter({ x: x })
-        canvasElement.current.simulation.setCenterAttractFarthestDiameter(x)
-    }
-
-    const changeCircleGravityValue = () => ({ x }) => {
-        setCircleGravityValue({ x: x })
-        canvasElement.current.simulation.setCenterAttractValue(x)
-    }
-
-    const changeBoxGravityValue = () => ({ x }) => {
-        setBoxGravityValue({ x: x })
-        canvasElement.current.simulation.setBoxAttractValue(x)
-    }
-
-    const changeGravityBoxWidth = () => ({ x }) => {
-        if (x > boxMaxWidth.x) {
-            setBoxMaxWidth({ x: x })
-            canvasElement.current.simulation.setBoxAttractFarthestWidth(x)
-        }
-        setBoxWidth({ x: x })
-        canvasElement.current.simulation.setBoxAttractWidth(x)
-    }
-
-    const changeGravityBoxHeight = () => ({ x }) => {
-        if (x > boxMaxHeight.x) {
-            setBoxMaxHeight({ x: x })
-            canvasElement.current.simulation.setBoxAttractFarthestHeight(x)
-        }
-        setBoxHeight({ x: x })
-        canvasElement.current.simulation.setBoxAttractHeight(x)
-    }
-
-    const changeGravityBoxMaxWidth = () => ({ x }) => {
-        if (x < boxWidth.x) {
-            setBoxWidth({ x: x })
-            canvasElement.current.simulation.setBoxAttractWidth(x)
-        }
-        setBoxMaxWidth({ x: x })
-        canvasElement.current.simulation.setBoxAttractFarthestWidth(x)
-    }
-
-    const changeGravityBoxMaxHeight = () => ({ x }) => {
-        if (x < boxHeight.x) {
-            setBoxHeight({ x: x })
-            canvasElement.current.simulation.setBoxAttractHeight(x)
-        }
-        setBoxMaxHeight({ x: x })
-        canvasElement.current.simulation.setBoxAttractFarthestHeight(x)
-    }
-
     const changeTriggers = () => (x) => {
         setTriggers(x)
         canvasElement.current.simulation.setTriggerVisualizations(x)
     }
 
-    const changeIndividualFlocking = () => (x) => {
-        setIndividualFlocking(x)
-        canvasElement.current.simulation.setIndividualFlocking(x)
-    }
-
     const changePredator = ({ radius1, radius2, colorPanic, panicTime }) => {
         const newRadius1 = radius1 > radius2 && radius1 === predator.radius1 ? radius2 : radius1
         const newRadius2 = radius1 > radius2 && radius2 === predator.radius2 ? radius1 : radius2
-        setPredator({
+        const newSetup = {
             radius1: newRadius1,
             radius2: newRadius2,
             colorPanic: colorPanic,
             panicTime: panicTime
-        })
-        canvasElement.current.simulation.setPredatorSetup(newRadius1, newRadius2, colorPanic, panicTime)
+        }
+        setPredator(newSetup)
+        canvasElement.current.simulation.setupPredator(newSetup)
     }
 
     useEffect(startHook, [])
@@ -305,8 +249,8 @@ const FlockSimulation = () => {
                     onChange={() => (x) => { changeBirdSetup({ ...birdSetup, linearRepulse: x }) }}
                 />
                 <SimSwitch
-                    label='Flocking variance' value={individualFlocking}
-                    onChange={changeIndividualFlocking}
+                    label='Flocking variance' value={birdSetup.individualFlocking}
+                    onChange={() => (x) => { changeBirdSetup({ ...birdSetup, individualFlocking: x }) }}
                 />
                 <SimSwitch
                     label='Red bird' value={redBird}
@@ -319,27 +263,27 @@ const FlockSimulation = () => {
             </div>
             <div style={columnStyle}>
                 <SimSwitch
-                    label='Attract mode' value={circleAttractMode}
+                    label='Attract mode' value={attractSetup.circleMode}
                     onLabel='Circle' offLabel='Box'
-                    onChange={changeCircleAttractMode}
+                    onChange={() => (x) => { changeAttractSetup({ ...attractSetup, circleMode: x }) }}
                 />
-                {circleAttractMode ?
-                    <CircleGravityControls diameter={circleGravityDiameter.x}
-                        changeDiameter={changeCircleGravityDiameter}
-                        maxDiameter={circleGravityMaxDiameter.x}
-                        changeMaxDiameter={changeCircleGravityMaxDiameter}
-                        force={circleGravityValue.x}
-                        changeForce={changeCircleGravityValue} /> :
-                    <BoxGravityControls force={boxGravityValue.x}
-                        changeForce={changeBoxGravityValue}
-                        width={boxWidth.x}
-                        changeWidth={changeGravityBoxWidth}
-                        height={boxHeight.x}
-                        changeHeight={changeGravityBoxHeight}
-                        maxWidth={boxMaxWidth.x}
-                        changeMaxWidth={changeGravityBoxMaxWidth}
-                        maxHeight={boxMaxHeight.x}
-                        changeMaxHeight={changeGravityBoxMaxHeight} />}
+                {attractSetup.circleMode ?
+                    <CircleGravityControls diameter={attractSetup.circleDiameter1}
+                        changeDiameter={() => ({ x }) => { changeAttractSetup({ ...attractSetup, circleDiameter1: x }) }}
+                        maxDiameter={attractSetup.circleDiameter2}
+                        changeMaxDiameter={() => ({ x }) => { changeAttractSetup({ ...attractSetup, circleDiameter2: x }) }}
+                        force={attractSetup.circleValue}
+                        changeForce={() => ({ x }) => { changeAttractSetup({ ...attractSetup, circleValue: x }) }} /> :
+                    <BoxGravityControls force={attractSetup.boxValue}
+                        changeForce={() => ({ x }) => { changeAttractSetup({ ...attractSetup, boxValue: x }) }}
+                        width={attractSetup.boxWidth1}
+                        changeWidth={() => ({ x }) => { changeAttractSetup({ ...attractSetup, boxWidth1: x }) }}
+                        height={attractSetup.boxHeight1}
+                        changeHeight={() => ({ x }) => { changeAttractSetup({ ...attractSetup, boxHeight1: x }) }}
+                        maxWidth={attractSetup.boxWidth2}
+                        changeMaxWidth={() => ({ x }) => { changeAttractSetup({ ...attractSetup, boxWidth2: x }) }}
+                        maxHeight={attractSetup.boxHeight2}
+                        changeMaxHeight={() => ({ x }) => { changeAttractSetup({ ...attractSetup, boxHeight2: x }) }} />}
             </div>
             <div style={columnStyle}>
                 <div style={titleStyle}>

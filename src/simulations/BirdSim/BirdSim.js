@@ -22,26 +22,22 @@ class BirdSimulation {
         this.setupBirds({
             count: 100, speed: 50, maxSpeed: 100, fov: 270,
             repulseDistance: 15, approachDistance: 30, repulseValue: 3,
-            approachValue: 0.5, linearRepulse: false, linearApproach: false
+            approachValue: 0.5, linearRepulse: false, linearApproach: false,
+            individualFlocking: false
         })
 
-        this.setIndividualFlocking(false)
+        this.setupAttraction({
+            circleMode: true, circleDiameter1: 200, circleDiameter2: 400, circleValue: 1,
+            boxWidth1: 500, boxWidth2: 700, boxHeight1: 50, boxHeight2: 100, boxValue: 1
+        })
+
         this.setRedBird(true)
 
-        this.setCircleAttractMode(true)
-        this.setCenterAttractDiameter(300)
-        this.setCenterAttractFarthestDiameter(800)
-        this.setCenterAttractValue(1)
-
-        this.setBoxAttractWidth(600)
-        this.setBoxAttractFarthestWidth(400)
-        this.setBoxAttractHeight(50)
-        this.setBoxAttractFarthestHeight(100)
-        this.setBoxAttractValue(1)
-
+        this.setupPredator({
+            radius1: 30, radius2: 150, colorPanic: false, panicTime: 4
+        })
         this.setPredator(false)
         this.setPredatorPosition(0, 0)
-        this.setPredatorSetup(30, 150, false, 4)
         this.setLinearPredator(true)
         this.setPanicReduction(0.2)
         this.setPanicAmplification(10)
@@ -53,7 +49,7 @@ class BirdSimulation {
     }
 
     setupBirds({ count, speed, maxSpeed, fov, repulseDistance, approachDistance,
-        repulseValue, approachValue, linearRepulse, linearApproach }) {
+        repulseValue, approachValue, linearRepulse, linearApproach, individualFlocking }) {
 
         this.setBirdCount(count)
         this.setFlightSpeed(speed)
@@ -65,6 +61,7 @@ class BirdSimulation {
         this.setApproachValue(approachValue)
         this.setLinearRepulse(linearRepulse)
         this.setLinearApproach(linearApproach)
+        this.setIndividualFlocking(individualFlocking)
     }
 
     setBirdCount(count) {
@@ -134,9 +131,17 @@ class BirdSimulation {
         this.fovTestCos = Math.cos(this.fovTestAngle)
     }
 
-    setRedBird(value) {
-        this.redBird = value
-        this.birds[0].color = this.redBird ? '#FF0000' : '#0000FF'
+    setupAttraction({ circleMode, circleDiameter1, circleDiameter2,
+        circleValue, boxWidth1, boxWidth2, boxHeight1, boxHeight2, boxValue }) {
+        this.setCircleAttractMode(circleMode)
+        this.setCenterAttractDiameter(circleDiameter1)
+        this.setCenterAttractFarthestDiameter(circleDiameter2)
+        this.setCenterAttractValue(circleValue)
+        this.setBoxAttractWidth(boxWidth1)
+        this.setBoxAttractFarthestWidth(boxWidth2)
+        this.setBoxAttractHeight(boxHeight1)
+        this.setBoxAttractFarthestHeight(boxHeight2)
+        this.setBoxAttractValue(boxValue)
     }
 
     setCircleAttractMode(value) {
@@ -185,7 +190,7 @@ class BirdSimulation {
         this.predator = value
     }
 
-    setPredatorSetup(radius1, radius2, colorPanic, panicTime) {
+    setupPredator({ radius1, radius2, colorPanic, panicTime }) {
         this.predatorFullEffectRadius = radius1
         this.predatorFullEffectRadiusSq = radius1 * radius1
 
@@ -210,6 +215,11 @@ class BirdSimulation {
 
     setPanicAmplification(value) {
         this.panicAmplification = value
+    }
+
+    setRedBird(value) {
+        this.redBird = value
+        this.birds[0].color = this.redBird ? '#FF0000' : '#0000FF'
     }
 
     setTriggerVisualizations(value) {
