@@ -19,7 +19,11 @@ class BirdSimulation {
 
         this.spaces = new SpatialHash(10)
 
-        this.setBirdSetup(100, 50, 100, 270, 15, 30, 3, 0.5, true, true)
+        this.setupBirds({
+            count: 100, speed: 50, maxSpeed: 100, fov: 270,
+            repulseDistance: 15, approachDistance: 30, repulseValue: 3,
+            approachValue: 0.5, linearRepulse: false, linearApproach: false
+        })
 
         this.setIndividualFlocking(false)
         this.setRedBird(true)
@@ -48,20 +52,20 @@ class BirdSimulation {
         this.centerY = canvas.height * 0.5
     }
 
-    setBirdSetup(count, speed, maxSpeed, fov, repulseDistance, approachDistance,
-        repulseValue, approachValue, linearRepulse, linearApproach) {
+    setupBirds({ count, speed, maxSpeed, fov, repulseDistance, approachDistance,
+        repulseValue, approachValue, linearRepulse, linearApproach }) {
 
-            this.setBirdCount(count)
-            this.setFlightSpeed(speed)
-            this.setMaxSpeed(maxSpeed)
-            this.setFov(fov)
-            this.setRepulseDistance(repulseDistance)
-            this.setApproachDistance(approachDistance)
-            this.setRepulseValue(repulseValue)
-            this.setApproachValue(approachValue)
-            this.setLinearRepulse(linearRepulse)
-            this.setLinearApproach(linearApproach)
-        }
+        this.setBirdCount(count)
+        this.setFlightSpeed(speed)
+        this.setMaxSpeed(maxSpeed)
+        this.setFov(fov)
+        this.setRepulseDistance(repulseDistance)
+        this.setApproachDistance(approachDistance)
+        this.setRepulseValue(repulseValue)
+        this.setApproachValue(approachValue)
+        this.setLinearRepulse(linearRepulse)
+        this.setLinearApproach(linearApproach)
+    }
 
     setBirdCount(count) {
         this.birdCount = count

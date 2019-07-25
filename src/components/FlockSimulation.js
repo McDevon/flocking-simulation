@@ -20,7 +20,6 @@ const FlockSimulation = () => {
         linearRepulse: 1,
         linearApproach: 0
     })
-    const [redBird, setRedBird] = useState(1)
     const [circleAttractMode, setCircleAttractMode] = useState(0)
     const [circleGravityDiameter, setCircleGravityDiameter] = useState({ x: 200 })
     const [circleGravityMaxDiameter, setCircleGravityMaxDiameter] = useState({ x: 400 })
@@ -31,6 +30,7 @@ const FlockSimulation = () => {
     const [boxMaxHeight, setBoxMaxHeight] = useState({ x: 100 })
     const [boxGravityValue, setBoxGravityValue] = useState({ x: 1 })
     const [triggers, setTriggers] = useState(0)
+    const [redBird, setRedBird] = useState(1)
     const [individualFlocking, setIndividualFlocking] = useState(0)
     const [predator, setPredator] = useState({
         radius1: 110,
@@ -64,11 +64,7 @@ const FlockSimulation = () => {
 
         startRender(canvasElement.current, birdSim())
 
-        canvasElement.current.simulation.setBirdSetup(
-            birdSetup.count, birdSetup.speed, birdSetup.maxSpeed, birdSetup.fov,
-            birdSetup.repulseDistance, birdSetup.approachDistance, birdSetup.repulseValue,
-            birdSetup.approachValue, birdSetup.linearRepulse, birdSetup.linearApproach
-        )
+        canvasElement.current.simulation.setupBirds(birdSetup)
         canvasElement.current.simulation.setRedBird(redBird)
         canvasElement.current.simulation.setCircleAttractMode(circleAttractMode)
         canvasElement.current.simulation.setCenterAttractDiameter(circleGravityDiameter.x)
@@ -139,8 +135,12 @@ const FlockSimulation = () => {
             linearRepulse: linearRepulse,
             linearApproach: linearApproach
         })
-        canvasElement.current.simulation.setBirdSetup(count, newSpeed, newMaxSpeed, fov, repulseDistance,
-            approachDistance, repulseValue, approachValue, linearRepulse, linearApproach)
+        canvasElement.current.simulation.setupBirds({
+            count: count, speed: newSpeed, maxSpeed: newMaxSpeed,
+            fov: fov, repulseDistance: repulseDistance, approachDistance: approachDistance,
+            repulseValue: repulseValue, approachValue: approachValue, linearRepulse: linearRepulse,
+            linearApproach: linearApproach
+        })
     }
 
     const changeRedBird = () => (x) => {
