@@ -29,11 +29,13 @@ const FlockSimulation = () => {
     const [boxMaxHeight, setBoxMaxHeight] = useState({ x: 100 })
     const [boxGravityValue, setBoxGravityValue] = useState({ x: 1 })
     const [triggers, setTriggers] = useState(0)
-    const [colorPanic, setColorPanic] = useState(0)
     const [individualFlocking, setIndividualFlocking] = useState(0)
-    const [predatorRadius, setPredatorRadius] = useState({ x: 90 })
-    const [predatorMaxRadius, setPredatorMaxRadius] = useState({ x: 150 })
-    const [panicTime, setPanicTime] = useState({ x: 4 })
+    const [predator, setPredator] = useState({
+        radius1: 110,
+        radius2: 150,
+        colorPanic: 0,
+        panicTime: 4
+    })
 
     const canvasElement = useRef(null)
 
@@ -82,10 +84,7 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setBoxAttractValue(boxGravityValue.x)
         canvasElement.current.simulation.setTriggerVisualizations(triggers)
         canvasElement.current.simulation.setIndividualFlocking(individualFlocking)
-        canvasElement.current.simulation.setPredatorFullEffectRadius(predatorRadius.x)
-        canvasElement.current.simulation.setPredatorMaxRadius(predatorMaxRadius.x)
-        canvasElement.current.simulation.setPanicTime(panicTime.x)
-        canvasElement.current.simulation.setColorPanic(colorPanic)
+        canvasElement.current.simulation.setPredatorSetup(predator.radius1, predator.radius2, predator.colorPanic, predator.panicTime)
 
         window.addEventListener("mousedown", (event) => {
             event.preventDefault()
@@ -262,29 +261,20 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setTriggerVisualizations(x)
     }
 
-    const changeColorPanic = () => (x) => {
-        setColorPanic(x)
-        canvasElement.current.simulation.setColorPanic(x)
-    }
-
     const changeIndividualFlocking = () => (x) => {
         setIndividualFlocking(x)
         canvasElement.current.simulation.setIndividualFlocking(x)
     }
-
-    const changePredatorRadius = () => ({ x }) => {
-        setPredatorRadius({ x: x })
-        canvasElement.current.simulation.setPredatorFullEffectRadius(x)
-    }
-
-    const changePredatorMaxRadius = () => ({ x }) => {
-        setPredatorMaxRadius({ x: x })
-        canvasElement.current.simulation.setPredatorMaxRadius(x)
-    }
-
-    const changePanicTime = () => ({ x }) => {
-        setPanicTime({ x: x })
-        canvasElement.current.simulation.setPanicTime(x)
+    
+    const changePredator = ({ radius1, radius2, colorPanic, panicTime }) => {
+        const newRadius1 = radius1 > radius2 && radius1 === predator.radius1 ? radius2 : radius1
+        const newRadius2 = radius1 > radius2 && radius2 === predator.radius2 ? radius1 : radius2
+        setPredator({
+            radius1: newRadius1,
+            radius2: newRadius2,
+            colorPanic: colorPanic,
+            panicTime: panicTime })
+        canvasElement.current.simulation.setPredatorSetup(newRadius1, newRadius2, colorPanic, panicTime)
     }
 
     useEffect(startHook, [])
@@ -394,23 +384,23 @@ const FlockSimulation = () => {
                     Predator
                 </div>
                 <SimSlider
-                    label='Min Radius' value={predatorRadius.x}
+                    label='Min Radius' value={predator.radius1}
                     min={0} max={500} step={5}
-                    onChange={changePredatorRadius}
+                    onChange={() => ({x}) => { changePredator({...predator, radius1: x}) }}
                 />
                 <SimSlider
-                    label='Max Radius' value={predatorMaxRadius.x}
+                    label='Max Radius' value={predator.radius2}
                     min={0} max={500} step={5}
-                    onChange={changePredatorMaxRadius}
+                    onChange={() => ({x}) => { changePredator({...predator, radius2: x}) }}
                 />
                 <SimSlider
-                    label='Panic Time' value={panicTime.x.toFixed(1)}
+                    label='Panic Time' value={predator.panicTime.toFixed(1)}
                     min={0} max={20} step={0.1}
-                    onChange={changePanicTime}
+                    onChange={() => ({x}) => { changePredator({...predator, panicTime: x}) }}
                 />
                 <SimSwitch
-                    label='Color panic' value={colorPanic}
-                    onChange={changeColorPanic}
+                    label='Color panic' value={predator.colorPanic}
+                    onChange={() => (x) => { changePredator({...predator, colorPanic: x}) }}
                 />
             </div>
         </div>

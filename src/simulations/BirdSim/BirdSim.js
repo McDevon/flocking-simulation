@@ -48,13 +48,10 @@ class BirdSimulation {
 
         this.setPredator(false)
         this.setPredatorPosition(0, 0)
-        this.setPredatorFullEffectRadius(30)
-        this.setPredatorMaxRadius(150)
+        this.setPredatorSetup(30, 150, false, 4)
         this.setLinearPredator(true)
-        this.setPanicTime(4)
         this.setPanicReduction(0.2)
         this.setPanicAmplification(10)
-        this.setColorPanic(false)
 
         this.setTriggerVisualizations(false)
 
@@ -180,14 +177,15 @@ class BirdSimulation {
         this.predator = value
     }
 
-    setPredatorMaxRadius(value) {
-        this.predatorMaxRadius = value
-        this.predatorMaxRadiusSq = value * value
-    }
+    setPredatorSetup(radius1, radius2, colorPanic, panicTime) {
+        this.predatorFullEffectRadius = radius1
+        this.predatorFullEffectRadiusSq = radius1 * radius1
 
-    setPredatorFullEffectRadius(value) {
-        this.predatorFullEffectRadius = value
-        this.predatorFullEffectRadiusSq = value * value
+        this.predatorMaxRadius = radius2
+        this.predatorMaxRadiusSq = radius2 * radius2
+
+        this.panicTime = panicTime
+        this.colorPanic = colorPanic
     }
 
     setPredatorValue(value) {
@@ -196,14 +194,6 @@ class BirdSimulation {
 
     setLinearPredator(value) {
         this.linearPredator = value
-    }
-
-    setPanicTime(value) {
-        this.panicTime = value
-    }
-
-    setColorPanic(value) {
-        this.colorPanic = value
     }
 
     setPanicReduction(value) {
