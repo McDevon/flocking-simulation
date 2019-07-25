@@ -38,8 +38,10 @@ const FlockSimulation = () => {
         colorPanic: 0,
         panicTime: 4
     })
-    const [triggers, setTriggers] = useState(0)
-    const [redBird, setRedBird] = useState(1)
+    const [visuals, setVisuals] = useState({
+        triggers: 0,
+        redBird: 1
+    })
 
     const canvasElement = useRef(null)
 
@@ -68,9 +70,9 @@ const FlockSimulation = () => {
 
         canvasElement.current.simulation.setupBirds(birdSetup)
         canvasElement.current.simulation.setupAttraction(attractSetup)
-        canvasElement.current.simulation.setRedBird(redBird)
-        canvasElement.current.simulation.setTriggerVisualizations(triggers)
         canvasElement.current.simulation.setupPredator(predator)
+        canvasElement.current.simulation.setRedBird(visuals.redBird)
+        canvasElement.current.simulation.setTriggerVisualizations(visuals.triggers)
 
         window.addEventListener("mousedown", (event) => {
             event.preventDefault()
@@ -160,14 +162,13 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setupAttraction(newSetup)
     }
 
-    const changeRedBird = () => (x) => {
-        setRedBird(x)
-        canvasElement.current.simulation.setRedBird(x)
-    }
-
-    const changeTriggers = () => (x) => {
-        setTriggers(x)
-        canvasElement.current.simulation.setTriggerVisualizations(x)
+    const changeVisuals = ({triggers, redBird}) => {
+        setVisuals({
+            triggers: triggers,
+            redBird: redBird
+        })
+        canvasElement.current.simulation.setRedBird(redBird)
+        canvasElement.current.simulation.setTriggerVisualizations(triggers)
     }
 
     const changePredator = ({ radius1, radius2, colorPanic, panicTime }) => {
@@ -253,12 +254,12 @@ const FlockSimulation = () => {
                     onChange={() => (x) => { changeBirdSetup({ ...birdSetup, individualFlocking: x }) }}
                 />
                 <SimSwitch
-                    label='Red bird' value={redBird}
-                    onChange={changeRedBird}
+                    label='Red bird' value={visuals.redBird}
+                    onChange={() => (x) => { changeVisuals({ ...visuals, redBird: x }) }}
                 />
                 <SimSwitch
-                    label='Show triggers' value={triggers}
-                    onChange={changeTriggers}
+                    label='Show triggers' value={visuals.triggers}
+                    onChange={() => (x) => { changeVisuals({ ...visuals, triggers: x }) }}
                 />
             </div>
             <div style={columnStyle}>
