@@ -198,6 +198,7 @@ class BirdSimulation {
         this.predatorMaxRadiusSq = radius2 * radius2
 
         this.panicTime = panicTime
+        this.panicSlowdownTime = panicTime * 0.25
         this.colorPanic = colorPanic
     }
 
@@ -233,8 +234,12 @@ class BirdSimulation {
     flockBehaviour(bird, dt) {
         let speed = this.flightSpeed
         if (bird.panicTimer > 0) {
+            if (bird.panicTimer > this.panicSlowdownTime) {
+                speed *= 1.5
+            } else {
+                speed *= 1 + 0.5 * (bird.panicTimer / this.panicSlowdownTime)
+            }
             bird.panicTimer -= dt
-            speed *= 1.5
         }
 
         bird.velocity.unit().multiplyByScalar(speed)
