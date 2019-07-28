@@ -243,30 +243,30 @@ const FlockSimulation = () => {
             <div style={columnStyle}>
                 <SimSwitch
                     label='Linear approach' value={birdSetup.linearApproach}
-                    onChange={() => (x) => changeBirdSetup({ ...birdSetup, linearApproach: x }) }
+                    onChange={() => x => changeBirdSetup({ ...birdSetup, linearApproach: x }) }
                 />
                 <SimSwitch
                     label='Linear repulse' value={birdSetup.linearRepulse}
-                    onChange={() => (x) => changeBirdSetup({ ...birdSetup, linearRepulse: x }) }
+                    onChange={() => x => changeBirdSetup({ ...birdSetup, linearRepulse: x }) }
                 />
                 <SimSwitch
                     label='Flocking variance' value={birdSetup.individualFlocking}
-                    onChange={() => (x) => changeBirdSetup({ ...birdSetup, individualFlocking: x }) }
+                    onChange={() => x => changeBirdSetup({ ...birdSetup, individualFlocking: x }) }
                 />
                 <SimSwitch
                     label='Red bird' value={visuals.redBird}
-                    onChange={() => (x) => changeVisuals({ ...visuals, redBird: x }) }
+                    onChange={() => x => changeVisuals({ ...visuals, redBird: x }) }
                 />
                 <SimSwitch
                     label='Show triggers' value={visuals.triggers}
-                    onChange={() => (x) => changeVisuals({ ...visuals, triggers: x }) }
+                    onChange={() => x => changeVisuals({ ...visuals, triggers: x }) }
                 />
             </div>
             <div style={columnStyle}>
                 <SimSwitch
                     label='Attract mode' value={attractSetup.circleMode}
                     onLabel='Circle' offLabel='Box'
-                    onChange={() => (x) => changeAttractSetup({ ...attractSetup, circleMode: x }) }
+                    onChange={() => x => changeAttractSetup({ ...attractSetup, circleMode: x }) }
                 />
                 {attractSetup.circleMode ?
                     <CircleGravityControls diameter={attractSetup.circleDiameter1}
@@ -307,7 +307,7 @@ const FlockSimulation = () => {
                 />
                 <SimSwitch
                     label='Color panic' value={predator.colorPanic}
-                    onChange={() => (x) => changePredator({ ...predator, colorPanic: x }) }
+                    onChange={() => x => changePredator({ ...predator, colorPanic: x }) }
                 />
             </div>
         </div>
