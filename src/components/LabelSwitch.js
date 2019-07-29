@@ -1,7 +1,7 @@
 import React from 'react'
 import Switch from 'react-input-switch'
 
-const SimSwitch = ({ label, value, onChange, onLabel = 'On', offLabel = 'Off' }) => {
+const LabelSwitch = ({ label, value, onChange, onLabel = 'On', offLabel = 'Off' }) => {
     const divStyle = {
         marginTop: '5px',
         marginLeft: '5px',
@@ -20,4 +20,4 @@ const SimSwitch = ({ label, value, onChange, onLabel = 'On', offLabel = 'Off' })
     </div>
 }
 
-export default SimSwitch
+export default LabelSwitch

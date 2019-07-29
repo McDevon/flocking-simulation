@@ -1,5 +1,5 @@
 import React from 'react'
-import SimSlider from './SimSlider';
+import LabelSlider from './LabelSlider';
 
 const BoxGravityControls = ({ force, changeForce,
     width, changeWidth,
@@ -7,27 +7,27 @@ const BoxGravityControls = ({ force, changeForce,
     maxWidth, changeMaxWidth,
     maxHeight, changeMaxHeight }) =>
     <div>
-        <SimSlider
+        <LabelSlider
             label='Min Width' value={width}
             min={0} max={2000} step={10}
             onChange={changeWidth}
         />
-        <SimSlider
+        <LabelSlider
             label='Min Height' value={height}
             min={0} max={2000} step={10}
             onChange={changeHeight}
         />
-        <SimSlider
+        <LabelSlider
             label='Max Width' value={maxWidth}
             min={0} max={2000} step={10}
             onChange={changeMaxWidth}
         />
-        <SimSlider
+        <LabelSlider
             label='Max Height' value={maxHeight}
             min={0} max={2000} step={10}
             onChange={changeMaxHeight}
         />
-        <SimSlider
+        <LabelSlider
             label='Attract force' value={force.toFixed(1)}
             min={0} max={10} step={0.1}
             onChange={changeForce}

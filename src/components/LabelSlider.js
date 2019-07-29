@@ -1,7 +1,7 @@
 import React from 'react'
 import Slider from 'react-input-slider'
 
-const SimSlider = ({ label, value, step, min, max, onChange, suffix='' }) => {
+const LabelSlider = ({ label, value, step, min, max, onChange, suffix='' }) => {
     const divStyle = {
         marginTop: '5px',
         marginLeft: '5px',
@@ -23,4 +23,4 @@ const SimSlider = ({ label, value, step, min, max, onChange, suffix='' }) => {
     </div>
 }
 
-export default SimSlider
+export default LabelSlider

@@ -1,21 +1,21 @@
 import React from 'react'
-import SimSlider from './SimSlider';
+import LabelSlider from './LabelSlider';
 
 const CircleGravityControls = ({ force, changeForce,
     diameter, changeDiameter,
     maxDiameter, changeMaxDiameter }) =>
     <div>
-        <SimSlider
+        <LabelSlider
             label='Min Diameter' value={diameter}
             min={0} max={2000} step={10}
             onChange={changeDiameter}
         />
-        <SimSlider
+        <LabelSlider
             label='Max Diameter' value={maxDiameter}
             min={0} max={2000} step={10}
             onChange={changeMaxDiameter}
         />
-        <SimSlider
+        <LabelSlider
             label='Attract force' value={force.toFixed(1)}
             min={0} max={10} step={0.1}
             onChange={changeForce}

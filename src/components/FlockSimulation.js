@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import startRender from '../simulations/RenderLoop'
 import birdSim from '../simulations/BirdSim/BirdSim'
-import SimSlider from './SimSlider';
-import SimSwitch from './SimSwitch';
+import LabelSlider from './LabelSlider';
+import LabelSwitch from './LabelSwitch';
 import CircleGravityControls from './CircleGravityControls'
 import BoxGravityControls from './BoxGravityControls'
 import FovDisplay from './FovDisplay'
@@ -190,44 +190,44 @@ const FlockSimulation = () => {
         <canvas style={canvasStyle} ref={canvasElement} width="900" height="600" />
         <div style={controlAreaStyle}>
             <div style={columnStyle}>
-                <SimSlider
+                <LabelSlider
                     label='Birds' value={birdSetup.count}
                     min={10} max={2500} step={10}
                     onChange={() => ({ x }) => changeBirdSetup({ ...birdSetup, count: x }) }
                 />
-                <SimSlider
+                <LabelSlider
                     label='Bird speed' value={birdSetup.speed}
                     min={0} max={200} step={1}
                     onChange={() => ({ x }) => changeBirdSetup({ ...birdSetup, speed: x }) }
                 />
-                <SimSlider
+                <LabelSlider
                     label='Max speed' value={birdSetup.maxSpeed}
                     min={0} max={200} step={1}
                     onChange={() => ({ x }) => changeBirdSetup({ ...birdSetup, maxSpeed: x }) }
                 />
-                <SimSlider
+                <LabelSlider
                     label='FOV' value={birdSetup.fov} suffix="°"
                     min={0} max={360} step={1}
                     onChange={() => ({ x }) => changeBirdSetup({ ...birdSetup, fov: x }) }
                 />
             </div>
             <div style={columnStyle}>
-                <SimSlider
+                <LabelSlider
                     label='Approach distance' value={birdSetup.approachDistance}
                     min={0} max={200} step={1}
                     onChange={() => ({ x }) => changeBirdSetup({ ...birdSetup, approachDistance: x }) }
                 />
-                <SimSlider
+                <LabelSlider
                     label='Approach value' value={birdSetup.approachValue.toFixed(1)}
                     min={0} max={10} step={0.1}
                     onChange={() => ({ x }) => changeBirdSetup({ ...birdSetup, approachValue: x }) }
                 />
-                <SimSlider
+                <LabelSlider
                     label='Repulse distance' value={birdSetup.repulseDistance}
                     min={0} max={200} step={1}
                     onChange={() => ({ x }) => changeBirdSetup({ ...birdSetup, repulseDistance: x }) }
                 />
-                <SimSlider
+                <LabelSlider
                     label='Repulse value' value={birdSetup.repulseValue.toFixed(1)}
                     min={0} max={10} step={0.1}
                     onChange={() => ({ x }) => changeBirdSetup({ ...birdSetup, repulseValue: x }) }
@@ -241,29 +241,29 @@ const FlockSimulation = () => {
                 />
             </div>
             <div style={columnStyle}>
-                <SimSwitch
+                <LabelSwitch
                     label='Linear approach' value={birdSetup.linearApproach}
                     onChange={() => x => changeBirdSetup({ ...birdSetup, linearApproach: x }) }
                 />
-                <SimSwitch
+                <LabelSwitch
                     label='Linear repulse' value={birdSetup.linearRepulse}
                     onChange={() => x => changeBirdSetup({ ...birdSetup, linearRepulse: x }) }
                 />
-                <SimSwitch
+                <LabelSwitch
                     label='Flocking variance' value={birdSetup.individualFlocking}
                     onChange={() => x => changeBirdSetup({ ...birdSetup, individualFlocking: x }) }
                 />
-                <SimSwitch
+                <LabelSwitch
                     label='Red bird' value={visuals.redBird}
                     onChange={() => x => changeVisuals({ ...visuals, redBird: x }) }
                 />
-                <SimSwitch
+                <LabelSwitch
                     label='Show triggers' value={visuals.triggers}
                     onChange={() => x => changeVisuals({ ...visuals, triggers: x }) }
                 />
             </div>
             <div style={columnStyle}>
-                <SimSwitch
+                <LabelSwitch
                     label='Attract mode' value={attractSetup.circleMode}
                     onLabel='Circle' offLabel='Box'
                     onChange={() => x => changeAttractSetup({ ...attractSetup, circleMode: x }) }
@@ -290,22 +290,22 @@ const FlockSimulation = () => {
                 <div style={titleStyle}>
                     Predator
                 </div>
-                <SimSlider
+                <LabelSlider
                     label='Min Radius' value={predator.radius1}
                     min={0} max={500} step={5}
                     onChange={() => ({ x }) => changePredator({ ...predator, radius1: x }) }
                 />
-                <SimSlider
+                <LabelSlider
                     label='Max Radius' value={predator.radius2}
                     min={0} max={500} step={5}
                     onChange={() => ({ x }) => changePredator({ ...predator, radius2: x }) }
                 />
-                <SimSlider
+                <LabelSlider
                     label='Panic Time' value={predator.panicTime.toFixed(1)}
                     min={0} max={20} step={0.1}
                     onChange={() => ({ x }) => changePredator({ ...predator, panicTime: x }) }
                 />
-                <SimSwitch
+                <LabelSwitch
                     label='Color panic' value={predator.colorPanic}
                     onChange={() => x => changePredator({ ...predator, colorPanic: x }) }
                 />
