@@ -107,18 +107,11 @@ const FlockSimulation = () => {
         window.addEventListener("mousedown", mousedown)
         window.addEventListener("mouseup", mouseup)
         window.addEventListener("mousemove", mousemove)
-        window.addEventListener("touchstart", mousedown)
-        window.addEventListener("touchend", mouseup)
-        window.addEventListener("touchmove", mousemove)
-
         
         return () => {
             window.removeEventListener("mousemove")
             window.removeEventListener("mouseup")
             window.removeEventListener("mousedown")
-            window.removeEventListener("touchstart")
-            window.removeEventListener("touchend")
-            window.removeEventListener("touchmove")
         }
     }
 
