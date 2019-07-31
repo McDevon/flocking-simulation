@@ -74,7 +74,7 @@ const FlockSimulation = () => {
         canvasElement.current.simulation.setRedBird(visuals.redBird)
         canvasElement.current.simulation.setTriggerVisualizations(visuals.triggers)
 
-        window.addEventListener("mousedown", (event) => {
+        const mousedown = event => {
             const rect = canvasElement.current.getBoundingClientRect()
             if (event.clientX < rect.left || event.clientY < rect.top
                 || event.clientX > rect.right || event.clientY > rect.bottom) {
@@ -82,33 +82,43 @@ const FlockSimulation = () => {
             }
             event.preventDefault()
             canvasElement.current.simulation.setPredator(true)
-        })
-
-        window.addEventListener("mouseup", (event) => {
+        }
+        const mouseup = event => {
             const rect = canvasElement.current.getBoundingClientRect()
             if (event.clientX < rect.left || event.clientY < rect.top
                 || event.clientX > rect.right || event.clientY > rect.bottom) {
                 return
             }
             canvasElement.current.simulation.setPredator(false)
-        })
-
-        window.addEventListener("mousemove", (event) => {
+        }
+        const mousemove = event => {
             const rect = canvasElement.current.getBoundingClientRect()
             if (event.clientX < rect.left || event.clientY < rect.top
                 || event.clientX > rect.right || event.clientY > rect.bottom) {
                 canvasElement.current.simulation.setPredator(false)
                 return
             }
+            event.preventDefault()
             const x = (event.clientX - rect.left) / (rect.right - rect.left) * canvasElement.current.width
             const y = (event.clientY - rect.top) / (rect.bottom - rect.top) * canvasElement.current.height
             canvasElement.current.simulation.setPredatorPosition(x, y)
-        })
+        }
 
+        window.addEventListener("mousedown", mousedown)
+        window.addEventListener("mouseup", mouseup)
+        window.addEventListener("mousemove", mousemove)
+        window.addEventListener("touchstart", mousedown)
+        window.addEventListener("touchend", mouseup)
+        window.addEventListener("touchmove", mousemove)
+
+        
         return () => {
             window.removeEventListener("mousemove")
             window.removeEventListener("mouseup")
             window.removeEventListener("mousedown")
+            window.removeEventListener("touchstart")
+            window.removeEventListener("touchend")
+            window.removeEventListener("touchmove")
         }
     }
 
