@@ -79,7 +79,7 @@ class BirdSimulation {
         this.approachDistance = distance
         this.approachSq = this.approachDistance * this.approachDistance
         let biggerDistance = Math.max(this.approachDistance, this.repulseDistance)
-        if (this.spaceSize !== biggerDistance) {
+        if (this.spaces.spaceSize !== biggerDistance) {
             this.spaces.resize(biggerDistance)
         }
     }
@@ -88,7 +88,7 @@ class BirdSimulation {
         this.repulseDistance = distance
         this.repulseSq = this.repulseDistance * this.repulseDistance
         let biggerDistance = Math.max(this.approachDistance, this.repulseDistance)
-        if (this.spaceSize !== biggerDistance) {
+        if (this.spaces.spaceSize !== biggerDistance) {
             this.spaces.resize(biggerDistance)
         }
     }

@@ -9,7 +9,11 @@ class SpatialHash {
     clear() {
         for (let spaceName in this.spaces) {
             if (this.spaces.hasOwnProperty(spaceName)) {
-                this.spaces[spaceName].length = 0
+                const space = this.spaces[spaceName]
+                for (let k = 0, klen = space.length; k < klen; k++) {
+                    space[k].__space = null
+                }
+                space.length = 0
             }
         }
     }
