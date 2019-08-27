@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/flocking-simulation/precache-manifest.3d10da57642e796d8e1a020eeef64372.js"
+  "/flocking-simulation/precache-manifest.001bd133cdf108be5cca63b96d6745ce.js"
 );
 
 self.addEventListener('message', (event) => {
