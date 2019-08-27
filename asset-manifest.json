@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.js": "/flocking-simulation/static/js/main.aff495de.chunk.js",
+    "main.js.map": "/flocking-simulation/static/js/main.aff495de.chunk.js.map",
+    "runtime~main.js": "/flocking-simulation/static/js/runtime~main.4a382d9c.js",
+    "runtime~main.js.map": "/flocking-simulation/static/js/runtime~main.4a382d9c.js.map",
+    "static/js/2.1e45a2b6.chunk.js": "/flocking-simulation/static/js/2.1e45a2b6.chunk.js",
+    "static/js/2.1e45a2b6.chunk.js.map": "/flocking-simulation/static/js/2.1e45a2b6.chunk.js.map",
+    "index.html": "/flocking-simulation/index.html",
+    "precache-manifest.3d10da57642e796d8e1a020eeef64372.js": "/flocking-simulation/precache-manifest.3d10da57642e796d8e1a020eeef64372.js",
+    "service-worker.js": "/flocking-simulation/service-worker.js"
+  }
+}
