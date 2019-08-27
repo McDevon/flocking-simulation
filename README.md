@@ -4,7 +4,7 @@ This project is a simple flocking simulation based on boids algorithm by Craig R
 
 In addition, this is my toy project to learn basics of React and relearn some JavaScript.
 
-Live demo available [online](http://flock-simulation.herokuapp.com).
+Live demo available [online](https://mcdevon.github.io/flocking-simulation).
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
